@@ -216,7 +216,7 @@ final _sections = <MenuSectionData>[
       id: 'main_paella',
       name: 'Seafood Paella',
       price: 1318.76,
-      image: 'lib/images/Seafood-Paella.jpeg', // normalized
+      image: 'lib/images/Seafood-Paella.jpeg',
       description: 'Spanish paella with shrimp, mussels, clams and chorizo.',
       allergens: 'Shellfish, Gluten',
       choices: [
@@ -251,7 +251,7 @@ final _sections = <MenuSectionData>[
       id: 'drink_lemonade',
       name: 'Fresh Lemonade',
       price: 227.00,
-      image: 'lib/images/Fresh-Lemonade.jpeg', // normalized
+      image: 'lib/images/Fresh-Lemonade.jpeg',
       description: 'Homemade lemonade with mint and lime.',
       allergens: 'None',
       choices: [
@@ -441,6 +441,16 @@ final _sections = <MenuSectionData>[
   ]),
 ];
 
+/* ---------- Helpers ---------- */
+
+double _adaptiveCardHeight(BuildContext context) {
+  final h = MediaQuery.of(context).size.height;
+  final proposed = h * 0.95;
+  const minH = 600.0;
+  const maxH = 780.0;
+  return proposed.clamp(minH, maxH);
+}
+
 /* ---------- UI ---------- */
 
 class MenuScreen extends StatelessWidget {
@@ -461,6 +471,10 @@ class MenuScreen extends StatelessWidget {
           ),
         ],
       ),
+
+      // 👇 added bottom nav (same style as Home)
+      bottomNavigationBar: const _AppBottomBar(activeIndex: 0),
+
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _sections.length,
@@ -486,22 +500,27 @@ class MenuScreen extends StatelessWidget {
               const SizedBox(height: 14),
               LayoutBuilder(
                 builder: (context, c) {
-                  final cross = c.maxWidth > 980
-                      ? 3
-                      : (c.maxWidth > 660 ? 2 : 1);
+                  final w = c.maxWidth;
+                  final cross = w >= 980 ? 3 : (w >= 660 ? 2 : 1);
 
-                  // Taller tiles so the content fits without overflow
-                  final aspect = cross == 3 ? 0.70 : (cross == 2 ? 0.78 : 0.96);
+                  final gridDelegate = cross == 1
+                      ? SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: _adaptiveCardHeight(context),
+                  )
+                      : SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: cross,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: (cross == 3 ? 0.70 : 0.78),
+                  );
 
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: cross,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: aspect, // 👈 important
-                    ),
+                    gridDelegate: gridDelegate,
                     itemCount: section.items.length,
                     itemBuilder: (_, i) => _MenuCard(section.items[i]),
                   );
@@ -516,6 +535,44 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
+/* ---------- Bottom bar (reusable) ---------- */
+
+class _AppBottomBar extends StatelessWidget {
+  final int activeIndex; // 0: home, 1: profile, 2: cart
+  const _AppBottomBar({required this.activeIndex});
+
+  void _go(BuildContext context, int i) {
+    if (i == activeIndex) return;
+    switch (i) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/'); // Home
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/profile');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/cart');
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: activeIndex,
+      onTap: (i) => _go(context, i),
+      backgroundColor: kAqua,
+      selectedItemColor: kDeepBlue,
+      unselectedItemColor: kDeepBlue.withOpacity(0.6),
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.shopping_basket_rounded), label: ''),
+      ],
+    );
+  }
+}
+
 class _MenuCard extends StatefulWidget {
   final MenuCardData data;
   const _MenuCard(this.data);
@@ -526,8 +583,8 @@ class _MenuCard extends StatefulWidget {
 
 class _MenuCardState extends State<_MenuCard> {
   int qty = 1;
-  final Map<String, Set<String>> multi = {};  // for checkbox groups
-  final Map<String, String> single = {};      // for radio groups
+  final Map<String, Set<String>> multi = {}; // for checkbox groups
+  final Map<String, String> single = {}; // for radio groups
 
   @override
   void initState() {
@@ -549,130 +606,129 @@ class _MenuCardState extends State<_MenuCard> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 560), // 👈 uniform height
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _MenuImage(pathOrUrl: d.image),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      d.name,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _MenuImage(pathOrUrl: d.image),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    d.name,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
-                  Text(
-                    'Rs ${d.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF34495e),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(d.description, style: const TextStyle(color: Colors.black87, fontSize: 13.5)),
-              const SizedBox(height: 6),
-              Text('Allergens: ${d.allergens}',
-                  style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5)),
-              const SizedBox(height: 8),
-
-              // Choices
-              for (final g in d.choices) ...[
+                ),
                 Text(
-                  g.title,
+                  'Rs ${d.price.toStringAsFixed(2)}',
                   style: const TextStyle(
-                    color: kDeepBlue,
                     fontWeight: FontWeight.w700,
-                    fontSize: 13,
+                    color: Color(0xFF34495e),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: -6,
-                  children: g.singleSelect
-                      ? g.options.map((o) {
-                    final selected = single[g.title] == o;
-                    return ChoiceChip(
-                      label: Text(o),
-                      selected: selected,
-                      onSelected: (_) => setState(() => single[g.title] = o),
-                    );
-                  }).toList()
-                      : g.options.map((o) {
-                    final set = multi[g.title]!;
-                    final selected = set.contains(o);
-                    return FilterChip(
-                      label: Text(o),
-                      selected: selected,
-                      onSelected: (sel) => setState(() {
-                        sel ? set.add(o) : set.remove(o);
-                      }),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 10),
               ],
+            ),
+            const SizedBox(height: 6),
+            Text(d.description, style: const TextStyle(color: Colors.black87, fontSize: 13.5)),
+            const SizedBox(height: 6),
+            Text(
+              'Allergens: ${d.allergens}',
+              style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5),
+            ),
+            const SizedBox(height: 8),
 
-              // Quantity
-              Row(
-                children: [
-                  const Text('Quantity:', style: TextStyle(fontWeight: FontWeight.w600)),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: () => setState(() {
-                      if (qty > 1) qty--;
-                    }),
-                  ),
-                  Text('$qty', style: const TextStyle(fontSize: 16)),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline),
-                    onPressed: () => setState(() => qty++),
-                  ),
-                  const Spacer(),
-                ],
-              ),
-
-              const Spacer(), // keeps the button at the bottom
-
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    final selected = <String>[
-                      for (final e in multi.entries) ...e.value,
-                      for (final e in single.entries) '${e.key}: ${e.value}',
-                    ];
-                    context.read<CartProvider>().add(
-                      MenuItem(
-                        id: d.id,
-                        name: d.name,
-                        price: d.price,
-                        imageUrl: d.image,
-                        category: '',
-                        options: const [],
-                      ),
-                      qty: qty,
-                      selected: selected,
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${d.name} ×$qty added to cart')),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: kDeepBlue,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: const Text('Add to Cart'),
+            // Choices
+            for (final g in d.choices) ...[
+              Text(
+                g.title,
+                style: const TextStyle(
+                  color: kDeepBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
               ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: g.singleSelect
+                    ? g.options.map((o) {
+                  final selected = single[g.title] == o;
+                  return ChoiceChip(
+                    label: Text(o),
+                    selected: selected,
+                    onSelected: (_) => setState(() => single[g.title] = o),
+                  );
+                }).toList()
+                    : g.options.map((o) {
+                  final set = multi[g.title]!;
+                  final selected = set.contains(o);
+                  return FilterChip(
+                    label: Text(o),
+                    selected: selected,
+                    onSelected: (sel) => setState(() {
+                      sel ? set.add(o) : set.remove(o);
+                    }),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 10),
             ],
-          ),
+
+            // Quantity
+            Row(
+              children: [
+                const Text('Quantity:', style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline),
+                  onPressed: () => setState(() {
+                    if (qty > 1) qty--;
+                  }),
+                ),
+                Text('$qty', style: const TextStyle(fontSize: 16)),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  onPressed: () => setState(() => qty++),
+                ),
+                const Spacer(),
+              ],
+            ),
+
+            const Spacer(), // keeps the button at the bottom
+
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  final selected = <String>[
+                    for (final e in multi.entries) ...e.value,
+                    for (final e in single.entries) '${e.key}: ${e.value}',
+                  ];
+                  context.read<CartProvider>().add(
+                    MenuItem(
+                      id: d.id,
+                      name: d.name,
+                      price: d.price,
+                      imageUrl: d.image,
+                      category: '',
+                      options: const [],
+                    ),
+                    qty: qty,
+                    selected: selected,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${d.name} ×$qty added to cart')),
+                  );
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: kDeepBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text('Add to Cart'),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -693,21 +749,21 @@ class _MenuImage extends StatelessWidget {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFB9D6F0),           // soft backdrop behind letterboxed areas
+        color: const Color(0xFFB9D6F0),
         borderRadius: BorderRadius.circular(6),
       ),
-      clipBehavior: Clip.antiAlias,                // keep rounded corners
+      clipBehavior: Clip.antiAlias,
       child: Center(
         child: isHttp
             ? Image.network(
           pathOrUrl,
-          fit: BoxFit.contain,               // 👈 show the whole image (no crop)
+          fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
         )
             : Image.asset(
           pathOrUrl,
-          fit: BoxFit.contain,               // 👈 show the whole image (no crop)
+          fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (_, __, ___) => const Text('Image not found'),

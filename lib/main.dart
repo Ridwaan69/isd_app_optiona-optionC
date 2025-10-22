@@ -6,6 +6,7 @@ import 'login.dart'; // provides LandingScreen, CustomerLoginScreen, AdminLoginS
 import 'signup_screen.dart'; // provides SignUpScreen
 import 'homepage.dart';// provides HomePageScreen
 import 'menu.dart';// provides MenuScreen
+import 'profile_settings.dart';// provides MenuScreen
 
 void main() => runApp(const App());
 
@@ -158,6 +159,7 @@ class App extends StatelessWidget {
           '/home/menu': (_) => const MenuScreen(),     // <-- must exist
           // ✅ Register the route your Home is using
           '/menu': (_) => const MenuScreen(),
+          '/profile': (_) => const ProfileSettingsScreen(),
         },
       ),
     );

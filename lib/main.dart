@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// Screens already in your project
-import 'login.dart';           // LandingScreen, CustomerLoginScreen, AdminLoginScreen
-import 'signup_screen.dart';   // SignUpScreen
-import 'homepage.dart';        // HomePage
-import 'profile_settings.dart';// ProfileSettingsScreen
+// your existing screens
+import 'login.dart';             // LandingScreen, CustomerLoginScreen, AdminLoginScreen
+import 'signup_screen.dart';     // SignUpScreen
+import 'homepage.dart';          // HomePage
+import 'profile_settings.dart';  // ProfileSettingsScreen
+import 'menu.dart';              // MenuScreen
+import 'cart.dart';         // CartScreen
 
-// New files we created
-import 'menu.dart';            // MenuScreen
-import 'cart.dart';       // CartScreen
-import 'cart_provider.dart';   // CartProvider
+// new
+import 'checkout.dart';          // ✅ CheckoutScreen
+import 'cart_provider.dart';     // ✅ CartProvider (state)
 
 void main() => runApp(const App());
 
-/* ---------------- Theme bits ---------------- */
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
 
@@ -24,7 +24,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CartProvider(),               // 👈 provides cart to whole app
+      create: (_) => CartProvider(),
       child: MaterialApp(
         title: 'SeaFeast',
         debugShowCheckedModeBanner: false,
@@ -55,19 +55,18 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-
-        // keep your landing/home flow as-is
+        // keep your current entry
         home: const LandingScreen(),
-
         routes: {
           '/login/customer': (_) => const CustomerLoginScreen(),
           '/login/admin': (_) => const AdminLoginScreen(),
           '/signup': (_) => const SignUpScreen(),
           '/home': (_) => const HomePage(),
 
-          // our pages
+          // app pages
           '/menu': (_) => const MenuScreen(),
           '/cart': (_) => const CartScreen(),
+          '/checkout': (_) => const CheckoutScreen(),   // ✅ new
           '/profile': (_) => const ProfileSettingsScreen(),
         },
       ),

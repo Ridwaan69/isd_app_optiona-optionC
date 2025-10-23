@@ -33,7 +33,7 @@ class _CartBody extends StatelessWidget {
 
     if (lines.isEmpty) return const _EmptyCart();
 
-    final currency = 'Rs ';
+    const currency = 'Rs ';
     final subtotal = cart.subtotal;
 
     return Column(
@@ -109,13 +109,15 @@ class _CartBody extends StatelessWidget {
                             context.read<CartProvider>().updateQty(i, newQty);
                           }
                         },
-                        onInc: () => context.read<CartProvider>().updateQty(i, qty + 1),
+                        onInc: () =>
+                            context.read<CartProvider>().updateQty(i, qty + 1),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '$currency${lineTotal.toStringAsFixed(2)}',
                         style: const TextStyle(
-                            fontWeight: FontWeight.w700, color: Color(0xFF34495e)),
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF34495e)),
                       ),
                     ],
                   ),
@@ -143,7 +145,8 @@ class _CartBody extends StatelessWidget {
               Row(
                 children: [
                   const Text('Subtotal',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                      style:
+                      TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   const Spacer(),
                   Text(
                     '$currency${subtotal.toStringAsFixed(2)}',
@@ -164,11 +167,8 @@ class _CartBody extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Checkout coming soon')),
-                    );
-                  },
+                  // 👇 navigate to checkout
+                  onPressed: () => Navigator.pushNamed(context, '/checkout'),
                   child: const Text('Proceed to checkout'),
                 ),
               ),
@@ -209,7 +209,8 @@ class _EmptyCart extends StatelessWidget {
             const SizedBox(height: 18),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: kDeepBlue),
-              onPressed: () => Navigator.pushReplacementNamed(context, '/menu'),
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, '/menu'),
               child: const Text('Browse menu'),
             )
           ],
@@ -260,7 +261,8 @@ class _QtyStepper extends StatelessWidget {
   final int qty;
   final VoidCallback onDec;
   final VoidCallback onInc;
-  const _QtyStepper({required this.qty, required this.onDec, required this.onInc});
+  const _QtyStepper(
+      {required this.qty, required this.onDec, required this.onInc});
 
   @override
   Widget build(BuildContext context) {

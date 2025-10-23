@@ -16,12 +16,12 @@ class ProfileSettingsScreen extends StatefulWidget {
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Fake initial values; plug in your real data source if needed
+
   final _nameCtrl = TextEditingController(text: 'Peter Parker');
   final _emailCtrl = TextEditingController(text: 'XXXXXXXX@gmail.com');
   final _dobCtrl = TextEditingController(text: '23/05/19XX');
 
-  Uint8List? _photoBytes; // works for mobile & web
+  Uint8List? _photoBytes; // for mobile & web
   final _picker = ImagePicker();
 
   @override
@@ -89,7 +89,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       lastDate: now,
       helpText: 'Select Date of Birth',
       builder: (context, child) {
-        // match your aqua theme a bit
+
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
@@ -113,7 +113,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
-    // TODO: Persist these values to your backend or local store.
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Profile saved')),
     );
@@ -288,7 +288,7 @@ class _AppBottomBar extends StatelessWidget {
         Navigator.pushReplacementNamed(context, '/home'); // Home
         break;
       case 1:
-      // already here
+
         break;
       case 2:
         Navigator.pushNamed(context, '/cart');
@@ -313,6 +313,4 @@ class _AppBottomBar extends StatelessWidget {
   }
 }
 
-/* ---------- Route helper ---------- */
-// Add this route in your MaterialApp routes map:
-// '/profile': (_) => const ProfileSettingsScreen(),
+

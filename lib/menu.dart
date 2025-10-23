@@ -48,21 +48,19 @@ class MenuSectionData {
 /* ---------- Content ---------- */
 
 final _sections = <MenuSectionData>[
-  // Starters
   MenuSectionData('Starters', [
     const MenuCardData(
       id: 'starter_calamari',
       name: 'Fried Calamari',
       price: 774.80,
       image: 'lib/images/Fried-Calamari.jpg',
-      description: 'Crispy calamari with tartar sauce.',
+      description: 'Crispy calamari rings served with homemade tartar sauce.',
       allergens: 'Shellfish, Gluten',
       choices: [
-        ChoiceGroup(title: 'Customizations', options: [
-          'Extra Tartar Sauce',
-          'Extra Lemon',
-          'Marinara Sauce'
-        ]),
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Tartar Sauce', 'Extra Lemon', 'Marinara Sauce'],
+        ),
         ChoiceGroup(
           title: 'Spice Level',
           singleSelect: true,
@@ -75,7 +73,7 @@ final _sections = <MenuSectionData>[
       name: 'Shrimp Cocktail',
       price: 683.30,
       image: 'lib/images/Shrimp-Cocktail.jpeg',
-      description: 'Chilled jumbo shrimp with cocktail sauce.',
+      description: 'Chilled jumbo shrimp with classic cocktail sauce.',
       allergens: 'Shellfish',
       choices: [
         ChoiceGroup(
@@ -84,15 +82,70 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
+    const MenuCardData(
+      id: 'starter_crab_cakes',
+      name: 'Crab Cakes',
+      price: 866.90,
+      image: 'lib/images/Crab-Cakes.jpg',
+      description: 'Maryland style crab cakes with remoulade sauce.',
+      allergens: 'Shellfish, Gluten',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Remoulade', 'Lemon Wedge', 'Side Salad'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'starter_chowder',
+      name: 'Clam Chowder',
+      price: 410.60,
+      image: 'lib/images/clam-chowder.jpeg',
+      description: 'Creamy New England clam chowder with potatoes.',
+      allergens: 'Shellfish, Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Oysters', 'Extra Bacon', 'Extra Spinach'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'starter_oysters',
+      name: 'Oysters Rockefeller',
+      price: 1050.50,
+      image: 'lib/images/Oysters-Rockefeller.jpeg',
+      description: 'Baked oysters with spinach, bacon and hollandaise.',
+      allergens: 'Shellfish, Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Oysters', 'Extra Bacon', 'Extra Spinach'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'starter_garlic_bread',
+      name: 'Garlic Bread',
+      price: 319.20,
+      image: 'lib/images/Garlic-Bread.jpeg',
+      description: 'Toasted bread with garlic butter and herbs.',
+      allergens: 'Gluten, Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Garlic', 'Cheese Topping', 'Herb Butter'],
+        ),
+      ],
+    ),
   ]),
-  // Main Courses
   MenuSectionData('Main Courses', [
     const MenuCardData(
       id: 'main_lobster',
       name: 'Grilled Lobster',
       price: 1505.70,
       image: 'lib/images/Grilled Lobster.jpg',
-      description: 'Fresh lobster with garlic butter and lemon.',
+      description: 'Fresh lobster grilled with garlic butter and lemon.',
       allergens: 'Shellfish',
       choices: [
         ChoiceGroup(
@@ -111,7 +164,7 @@ final _sections = <MenuSectionData>[
       name: 'Grilled Salmon',
       price: 1140.90,
       image: 'lib/images/Grilled-Salmon.jpg',
-      description: 'Atlantic salmon with herbs.',
+      description: 'Atlantic salmon fillet grilled with herbs.',
       allergens: 'Fish',
       choices: [
         ChoiceGroup(
@@ -125,8 +178,73 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
+    const MenuCardData(
+      id: 'main_shrimp_scampi',
+      name: 'Shrimp Scampi',
+      price: 1050.50,
+      image: 'lib/images/Shrimp-Scampi.jpg',
+      description: 'Shrimp sautéed in garlic, butter, and white wine sauce.',
+      allergens: 'Shellfish, Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Garlic', 'Parmesan Cheese', 'Red Pepper Flakes'],
+        ),
+        ChoiceGroup(
+          title: 'Spice Level',
+          singleSelect: true,
+          options: ['Mild', 'Medium', 'Hot'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'main_fish_chips',
+      name: 'Fish & Chips',
+      price: 909.35,
+      image: 'lib/images/Fish & Chips.jpeg',
+      description: 'Beer-battered cod with crispy fries and coleslaw.',
+      allergens: 'Fish, Gluten',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Tartar Sauce', 'Malt Vinegar', 'Lemon Wedge'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'main_paella',
+      name: 'Seafood Paella',
+      price: 1318.76,
+      image: 'lib/images/Seafood-Paella.jpeg',
+      description: 'Spanish paella with shrimp, mussels, clams and chorizo.',
+      allergens: 'Shellfish, Gluten',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Seafood', 'Lemon Wedge', 'Extra Saffron'],
+        ),
+        ChoiceGroup(
+          title: 'Spice Level',
+          singleSelect: true,
+          options: ['Mild', 'Medium', 'Hot'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'main_thermidor',
+      name: 'Lobster Thermidor',
+      price: 1682.68,
+      image: 'lib/images/Lobster-Thermidor.jpeg',
+      description: 'Lobster gratin with mushroom & brandy cream sauce.',
+      allergens: 'Shellfish, Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Mushrooms', 'Parmesan Crust', 'Fresh Herbs'],
+        ),
+      ],
+    ),
   ]),
-  // Drinks
   MenuSectionData('Drinks', [
     const MenuCardData(
       id: 'drink_lemonade',
@@ -166,8 +284,74 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
+    const MenuCardData(
+      id: 'drink_smoothie',
+      name: 'Tropical Smoothie',
+      price: 317.98,
+      image: 'lib/images/Tropical-Smoothie.jpeg',
+      description: 'Mango, pineapple and coconut smoothie.',
+      allergens: 'Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Coconut', 'Protein Powder', 'Chia Seeds'],
+        ),
+        ChoiceGroup(
+          title: 'Size',
+          singleSelect: true,
+          options: ['Regular', 'Large'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'drink_beer',
+      name: 'Craft Beer',
+      price: 363.47,
+      image: 'lib/images/Craft-Beer.jpeg',
+      description: 'Selection of local craft beers.',
+      allergens: 'Gluten',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Chilled Glass', 'Lemon Wedge', 'Salt Rim'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'drink_wine',
+      name: 'House Wine',
+      price: 408.96,
+      image: 'lib/images/House-Wine.jpeg',
+      description: 'Glass of red or white house wine.',
+      allergens: 'None',
+      choices: [
+        ChoiceGroup(
+          title: 'Wine Type',
+          singleSelect: true,
+          options: ['Red', 'White', 'Rosé'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'drink_mocktail',
+      name: 'Ocean Breeze Mocktail',
+      price: 272.49,
+      image: 'lib/images/Ocean-Breeze-Mocktail.jpeg',
+      description: 'Pineapple, cranberry and lime blend.',
+      allergens: 'None',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Fruit', 'Mint Garnish', 'Sugar Rim'],
+        ),
+        ChoiceGroup(
+          title: 'Size',
+          singleSelect: true,
+          options: ['Regular', 'Large'],
+        ),
+      ],
+    ),
   ]),
-  // Desserts
   MenuSectionData('Desserts', [
     const MenuCardData(
       id: 'dessert_key_lime',
@@ -188,7 +372,7 @@ final _sections = <MenuSectionData>[
       name: 'Chocolate Lava Cake',
       price: 408.96,
       image: 'lib/images/Chocolate-Lava-Cake.jpeg',
-      description: 'Warm cake with molten center.',
+      description: 'Warm cake with molten center and ice cream.',
       allergens: 'Dairy, Gluten, Eggs',
       choices: [
         ChoiceGroup(
@@ -197,8 +381,65 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
+    const MenuCardData(
+      id: 'dessert_cheesecake',
+      name: 'New York Cheesecake',
+      price: 386.21,
+      image: 'lib/images/Newyork-Cheesecake.jpeg',
+      description: 'Classic cheesecake with berry compote.',
+      allergens: 'Dairy, Gluten',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Berry Compote', 'Whipped Cream', 'Chocolate Drizzle'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'dessert_creme_brulee',
+      name: 'Crème Brûlée',
+      price: 340.72,
+      image: 'lib/images/Crème-Brûlée.jpeg',
+      description: 'Vanilla custard with caramelized sugar top.',
+      allergens: 'Dairy, Eggs',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Caramelized Top', 'Fresh Berries', 'Mint Garnish'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'dessert_sorbet',
+      name: 'Sorbet Trio',
+      price: 317.98,
+      image: 'lib/images/Sorbet-Trio.jpeg',
+      description: 'Mango, raspberry and lemon sorbets.',
+      allergens: 'None',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Scoop', 'Fresh Fruit', 'Mint Garnish'],
+        ),
+      ],
+    ),
+    const MenuCardData(
+      id: 'dessert_sundae',
+      name: 'Ice Cream Sundae',
+      price: 363.47,
+      image: 'lib/images/Ice-Cream-Sundae.jpeg',
+      description: 'Vanilla ice cream with chocolate sauce & toppings.',
+      allergens: 'Dairy',
+      choices: [
+        ChoiceGroup(
+          title: 'Customizations',
+          options: ['Extra Toppings', 'Whipped Cream', 'Cherry on Top'],
+        ),
+      ],
+    ),
   ]),
 ];
+
 
 /* ---------- Helpers ---------- */
 

@@ -202,7 +202,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 }
 
-/* ---------------- Add Card ---------------- */
+/* --------------- Add Card --------------- */
 
 class CardInfo {
   final String holderName;

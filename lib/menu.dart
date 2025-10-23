@@ -633,7 +633,7 @@ class _AppBottomBar extends StatelessWidget {
         Navigator.pushReplacementNamed(context, '/'); // Home
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profile'); 
+        Navigator.pushReplacementNamed(context, '/profile');
         break;
       case 2:
         Navigator.pushNamed(context, '/cart');

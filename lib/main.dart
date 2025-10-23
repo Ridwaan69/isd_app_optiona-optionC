@@ -123,6 +123,7 @@ class App extends StatelessWidget {
       create: (_) => CartProvider(),
       child: MaterialApp(
         title: 'SeaFeast',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           colorSchemeSeed: _deepBlue,

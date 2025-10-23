@@ -285,7 +285,7 @@ class _AppBottomBar extends StatelessWidget {
     if (i == activeIndex) return;
     switch (i) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/'); // Home
+        Navigator.pushReplacementNamed(context, '/home'); // Home
         break;
       case 1:
       // already here

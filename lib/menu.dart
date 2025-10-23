@@ -1,7 +1,7 @@
 // lib/menu.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'main.dart' show CartProvider, MenuItem; // reuse your provider & model
+import 'main.dart' show CartProvider, MenuItem;
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -445,97 +445,154 @@ final _sections = <MenuSectionData>[
 
 double _adaptiveCardHeight(BuildContext context) {
   final h = MediaQuery.of(context).size.height;
-  final proposed = h * 0.95;
+  final proposed = h * 0.95; // more space on tiny phones
   const minH = 600.0;
   const maxH = 780.0;
   return proposed.clamp(minH, maxH);
 }
 
-/* ---------- UI ---------- */
+MenuSectionData _byTitle(String title) =>
+    _sections.firstWhere((s) => s.title == title);
+
+/* ---------- Tabbed Menu Screen ---------- */
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kAqua,
-      appBar: AppBar(
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
         backgroundColor: kAqua,
-        centerTitle: true,
-        title: const Text('SEAFEAST Menu'),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/cart'),
-            icon: const Icon(Icons.shopping_cart, color: kDeepBlue),
-          ),
-        ],
-      ),
+        appBar: AppBar(
+          backgroundColor: kAqua,
+          centerTitle: true,
+          title: const Text('SEAFEAST Menu'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/cart'),
+              icon: const Icon(Icons.shopping_cart, color: kDeepBlue),
+            ),
+          ],
+        ),
 
-      // 👇 added bottom nav (same style as Home)
-      bottomNavigationBar: const _AppBottomBar(activeIndex: 0),
+        bottomNavigationBar: const _AppBottomBar(activeIndex: 0),
 
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _sections.length,
-        itemBuilder: (_, s) {
-          final section = _sections[s];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: 8),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: kDeepBlue, width: 2)),
+        body: Column(
+          children: [
+            // ⬇️ TabBar moved OUT of AppBar to avoid clipping
+            Material(
+              color: kAqua,
+              child: TabBar(
+                // all four tabs share width equally (no scrolling)
+                isScrollable: false,
+                labelPadding: EdgeInsets.zero,
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Text(
-                  section.title,
-                  style: const TextStyle(
-                    color: kDeepBlue,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
+                labelColor: kDeepBlue,
+                unselectedLabelColor: Color(0xFF2B5B66),
+                indicatorColor: kDeepBlue,
+                indicatorWeight: 3,
+                tabs: const [
+                  Tab(text: 'Starters'),
+                  Tab(text: 'Main Courses'),
+                  Tab(text: 'Drinks'),
+                  Tab(text: 'Desserts'),
+                ],
               ),
-              const SizedBox(height: 14),
-              LayoutBuilder(
-                builder: (context, c) {
-                  final w = c.maxWidth;
-                  final cross = w >= 980 ? 3 : (w >= 660 ? 2 : 1);
+            )
+            ,
 
-                  final gridDelegate = cross == 1
-                      ? SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    mainAxisExtent: _adaptiveCardHeight(context),
-                  )
-                      : SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: cross,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: (cross == 3 ? 0.70 : 0.78),
-                  );
-
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: gridDelegate,
-                    itemCount: section.items.length,
-                    itemBuilder: (_, i) => _MenuCard(section.items[i]),
-                  );
-                },
+            // content
+            const Expanded(
+              child: TabBarView(
+                children: [
+                  _SectionView(sectionTitle: 'Starters'),
+                  _SectionView(sectionTitle: 'Main Courses'),
+                  _SectionView(sectionTitle: 'Drinks'),
+                  _SectionView(sectionTitle: 'Desserts'),
+                ],
               ),
-              const SizedBox(height: 18),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/* ---------- Bottom bar (reusable) ---------- */
+/* ---------- One section per tab ---------- */
+
+class _SectionView extends StatelessWidget {
+  final String sectionTitle;
+  const _SectionView({required this.sectionTitle});
+
+  @override
+  Widget build(BuildContext context) {
+    final section = _byTitle(sectionTitle);
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Optional section header bar (nice on wide screens)
+        Container(
+          padding: const EdgeInsets.only(bottom: 8),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: kDeepBlue, width: 2)),
+          ),
+          child: Text(
+            section.title,
+            style: const TextStyle(
+              color: kDeepBlue,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        LayoutBuilder(
+          builder: (context, c) {
+            final w = c.maxWidth;
+            final cross = w >= 980 ? 3 : (w >= 660 ? 2 : 1);
+
+            final gridDelegate = cross == 1
+                ? SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              mainAxisExtent: _adaptiveCardHeight(context),
+            )
+                : SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: cross,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: (cross == 3 ? 0.70 : 0.78),
+            );
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: gridDelegate,
+              itemCount: section.items.length,
+              itemBuilder: (_, i) => _MenuCard(section.items[i]),
+            );
+          },
+        ),
+        const SizedBox(height: 18),
+      ],
+    );
+  }
+}
+
+/* ---------- Bottom bar (reused) ---------- */
 
 class _AppBottomBar extends StatelessWidget {
   final int activeIndex; // 0: home, 1: profile, 2: cart
@@ -573,6 +630,8 @@ class _AppBottomBar extends StatelessWidget {
   }
 }
 
+/* ---------- Card + image (unchanged, with chip wrap fix) ---------- */
+
 class _MenuCard extends StatefulWidget {
   final MenuCardData data;
   const _MenuCard(this.data);
@@ -583,15 +642,15 @@ class _MenuCard extends StatefulWidget {
 
 class _MenuCardState extends State<_MenuCard> {
   int qty = 1;
-  final Map<String, Set<String>> multi = {}; // for checkbox groups
-  final Map<String, String> single = {}; // for radio groups
+  final Map<String, Set<String>> multi = {};
+  final Map<String, String> single = {};
 
   @override
   void initState() {
     super.initState();
     for (final g in widget.data.choices) {
       if (g.singleSelect) {
-        single[g.title] = g.options.first; // default like HTML "checked"
+        single[g.title] = g.options.first;
       } else {
         multi[g.title] = <String>{};
       }
@@ -637,7 +696,6 @@ class _MenuCardState extends State<_MenuCard> {
             ),
             const SizedBox(height: 8),
 
-            // Choices
             for (final g in d.choices) ...[
               Text(
                 g.title,
@@ -675,7 +733,6 @@ class _MenuCardState extends State<_MenuCard> {
               const SizedBox(height: 10),
             ],
 
-            // Quantity
             Row(
               children: [
                 const Text('Quantity:', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -695,8 +752,7 @@ class _MenuCardState extends State<_MenuCard> {
               ],
             ),
 
-            const Spacer(), // keeps the button at the bottom
-
+            const Spacer(),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -734,8 +790,6 @@ class _MenuCardState extends State<_MenuCard> {
     );
   }
 }
-
-/* ---------- helpers ---------- */
 
 class _MenuImage extends StatelessWidget {
   final String pathOrUrl;

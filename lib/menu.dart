@@ -1,12 +1,11 @@
-// lib/menu.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'main.dart' show CartProvider, MenuItem;
+import 'cart_provider.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
-/* ---------- Data models ---------- */
+/* ---------- Data models for the menu UI ---------- */
 
 class ChoiceGroup {
   final String title;
@@ -24,7 +23,7 @@ class MenuCardData {
   final String id;
   final String name;
   final double price;
-  final String image; // asset path like "lib/images/xxx.jpg" or http url
+  final String image; // asset path or http url
   final String description;
   final String allergens;
   final List<ChoiceGroup> choices;
@@ -49,19 +48,21 @@ class MenuSectionData {
 /* ---------- Content ---------- */
 
 final _sections = <MenuSectionData>[
+  // Starters
   MenuSectionData('Starters', [
     const MenuCardData(
       id: 'starter_calamari',
       name: 'Fried Calamari',
       price: 774.80,
       image: 'lib/images/Fried-Calamari.jpg',
-      description: 'Crispy calamari rings served with homemade tartar sauce.',
+      description: 'Crispy calamari with tartar sauce.',
       allergens: 'Shellfish, Gluten',
       choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Tartar Sauce', 'Extra Lemon', 'Marinara Sauce'],
-        ),
+        ChoiceGroup(title: 'Customizations', options: [
+          'Extra Tartar Sauce',
+          'Extra Lemon',
+          'Marinara Sauce'
+        ]),
         ChoiceGroup(
           title: 'Spice Level',
           singleSelect: true,
@@ -74,7 +75,7 @@ final _sections = <MenuSectionData>[
       name: 'Shrimp Cocktail',
       price: 683.30,
       image: 'lib/images/Shrimp-Cocktail.jpeg',
-      description: 'Chilled jumbo shrimp with classic cocktail sauce.',
+      description: 'Chilled jumbo shrimp with cocktail sauce.',
       allergens: 'Shellfish',
       choices: [
         ChoiceGroup(
@@ -83,70 +84,15 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
-    const MenuCardData(
-      id: 'starter_crab_cakes',
-      name: 'Crab Cakes',
-      price: 866.90,
-      image: 'lib/images/Crab-Cakes.jpg',
-      description: 'Maryland style crab cakes with remoulade sauce.',
-      allergens: 'Shellfish, Gluten',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Remoulade', 'Lemon Wedge', 'Side Salad'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'starter_chowder',
-      name: 'Clam Chowder',
-      price: 410.60,
-      image: 'lib/images/clam-chowder.jpeg',
-      description: 'Creamy New England clam chowder with potatoes.',
-      allergens: 'Shellfish, Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Oysters', 'Extra Bacon', 'Extra Spinach'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'starter_oysters',
-      name: 'Oysters Rockefeller',
-      price: 1050.50,
-      image: 'lib/images/Oysters-Rockefeller.jpeg',
-      description: 'Baked oysters with spinach, bacon and hollandaise.',
-      allergens: 'Shellfish, Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Oysters', 'Extra Bacon', 'Extra Spinach'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'starter_garlic_bread',
-      name: 'Garlic Bread',
-      price: 319.20,
-      image: 'lib/images/Garlic-Bread.jpeg',
-      description: 'Toasted bread with garlic butter and herbs.',
-      allergens: 'Gluten, Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Garlic', 'Cheese Topping', 'Herb Butter'],
-        ),
-      ],
-    ),
   ]),
+  // Main Courses
   MenuSectionData('Main Courses', [
     const MenuCardData(
       id: 'main_lobster',
       name: 'Grilled Lobster',
       price: 1505.70,
       image: 'lib/images/Grilled Lobster.jpg',
-      description: 'Fresh lobster grilled with garlic butter and lemon.',
+      description: 'Fresh lobster with garlic butter and lemon.',
       allergens: 'Shellfish',
       choices: [
         ChoiceGroup(
@@ -165,7 +111,7 @@ final _sections = <MenuSectionData>[
       name: 'Grilled Salmon',
       price: 1140.90,
       image: 'lib/images/Grilled-Salmon.jpg',
-      description: 'Atlantic salmon fillet grilled with herbs.',
+      description: 'Atlantic salmon with herbs.',
       allergens: 'Fish',
       choices: [
         ChoiceGroup(
@@ -179,73 +125,8 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
-    const MenuCardData(
-      id: 'main_shrimp_scampi',
-      name: 'Shrimp Scampi',
-      price: 1050.50,
-      image: 'lib/images/Shrimp-Scampi.jpg',
-      description: 'Shrimp sautéed in garlic, butter, and white wine sauce.',
-      allergens: 'Shellfish, Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Garlic', 'Parmesan Cheese', 'Red Pepper Flakes'],
-        ),
-        ChoiceGroup(
-          title: 'Spice Level',
-          singleSelect: true,
-          options: ['Mild', 'Medium', 'Hot'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'main_fish_chips',
-      name: 'Fish & Chips',
-      price: 909.35,
-      image: 'lib/images/Fish & Chips.jpeg',
-      description: 'Beer-battered cod with crispy fries and coleslaw.',
-      allergens: 'Fish, Gluten',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Tartar Sauce', 'Malt Vinegar', 'Lemon Wedge'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'main_paella',
-      name: 'Seafood Paella',
-      price: 1318.76,
-      image: 'lib/images/Seafood-Paella.jpeg',
-      description: 'Spanish paella with shrimp, mussels, clams and chorizo.',
-      allergens: 'Shellfish, Gluten',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Seafood', 'Lemon Wedge', 'Extra Saffron'],
-        ),
-        ChoiceGroup(
-          title: 'Spice Level',
-          singleSelect: true,
-          options: ['Mild', 'Medium', 'Hot'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'main_thermidor',
-      name: 'Lobster Thermidor',
-      price: 1682.68,
-      image: 'lib/images/Lobster-Thermidor.jpeg',
-      description: 'Lobster gratin with mushroom & brandy cream sauce.',
-      allergens: 'Shellfish, Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Mushrooms', 'Parmesan Crust', 'Fresh Herbs'],
-        ),
-      ],
-    ),
   ]),
+  // Drinks
   MenuSectionData('Drinks', [
     const MenuCardData(
       id: 'drink_lemonade',
@@ -285,74 +166,8 @@ final _sections = <MenuSectionData>[
         ),
       ],
     ),
-    const MenuCardData(
-      id: 'drink_smoothie',
-      name: 'Tropical Smoothie',
-      price: 317.98,
-      image: 'lib/images/Tropical-Smoothie.jpeg',
-      description: 'Mango, pineapple and coconut smoothie.',
-      allergens: 'Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Coconut', 'Protein Powder', 'Chia Seeds'],
-        ),
-        ChoiceGroup(
-          title: 'Size',
-          singleSelect: true,
-          options: ['Regular', 'Large'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'drink_beer',
-      name: 'Craft Beer',
-      price: 363.47,
-      image: 'lib/images/Craft-Beer.jpeg',
-      description: 'Selection of local craft beers.',
-      allergens: 'Gluten',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Chilled Glass', 'Lemon Wedge', 'Salt Rim'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'drink_wine',
-      name: 'House Wine',
-      price: 408.96,
-      image: 'lib/images/House-Wine.jpeg',
-      description: 'Glass of red or white house wine.',
-      allergens: 'None',
-      choices: [
-        ChoiceGroup(
-          title: 'Wine Type',
-          singleSelect: true,
-          options: ['Red', 'White', 'Rosé'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'drink_mocktail',
-      name: 'Ocean Breeze Mocktail',
-      price: 272.49,
-      image: 'lib/images/Ocean-Breeze-Mocktail.jpeg',
-      description: 'Pineapple, cranberry and lime blend.',
-      allergens: 'None',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Fruit', 'Mint Garnish', 'Sugar Rim'],
-        ),
-        ChoiceGroup(
-          title: 'Size',
-          singleSelect: true,
-          options: ['Regular', 'Large'],
-        ),
-      ],
-    ),
   ]),
+  // Desserts
   MenuSectionData('Desserts', [
     const MenuCardData(
       id: 'dessert_key_lime',
@@ -373,68 +188,12 @@ final _sections = <MenuSectionData>[
       name: 'Chocolate Lava Cake',
       price: 408.96,
       image: 'lib/images/Chocolate-Lava-Cake.jpeg',
-      description: 'Warm cake with molten center and ice cream.',
+      description: 'Warm cake with molten center.',
       allergens: 'Dairy, Gluten, Eggs',
       choices: [
         ChoiceGroup(
           title: 'Customizations',
           options: ['Extra Ice Cream', 'Chocolate Sauce', 'Fresh Berries'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'dessert_cheesecake',
-      name: 'New York Cheesecake',
-      price: 386.21,
-      image: 'lib/images/Newyork-Cheesecake.jpeg',
-      description: 'Classic cheesecake with berry compote.',
-      allergens: 'Dairy, Gluten',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Berry Compote', 'Whipped Cream', 'Chocolate Drizzle'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'dessert_creme_brulee',
-      name: 'Crème Brûlée',
-      price: 340.72,
-      image: 'lib/images/Crème-Brûlée.jpeg',
-      description: 'Vanilla custard with caramelized sugar top.',
-      allergens: 'Dairy, Eggs',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Caramelized Top', 'Fresh Berries', 'Mint Garnish'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'dessert_sorbet',
-      name: 'Sorbet Trio',
-      price: 317.98,
-      image: 'lib/images/Sorbet-Trio.jpeg',
-      description: 'Mango, raspberry and lemon sorbets.',
-      allergens: 'None',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Scoop', 'Fresh Fruit', 'Mint Garnish'],
-        ),
-      ],
-    ),
-    const MenuCardData(
-      id: 'dessert_sundae',
-      name: 'Ice Cream Sundae',
-      price: 363.47,
-      image: 'lib/images/Ice-Cream-Sundae.jpeg',
-      description: 'Vanilla ice cream with chocolate sauce & toppings.',
-      allergens: 'Dairy',
-      choices: [
-        ChoiceGroup(
-          title: 'Customizations',
-          options: ['Extra Toppings', 'Whipped Cream', 'Cherry on Top'],
         ),
       ],
     ),
@@ -454,7 +213,7 @@ double _adaptiveCardHeight(BuildContext context) {
 MenuSectionData _byTitle(String title) =>
     _sections.firstWhere((s) => s.title == title);
 
-/* ---------- Tabbed Menu Screen ---------- */
+/* ---------- Menu Screen with 4 tabs ---------- */
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -470,9 +229,49 @@ class MenuScreen extends StatelessWidget {
           centerTitle: true,
           title: const Text('SEAFEAST Menu'),
           actions: [
-            IconButton(
-              onPressed: () => Navigator.pushNamed(context, '/cart'),
-              icon: const Icon(Icons.shopping_cart, color: kDeepBlue),
+            // AppBar cart icon with live badge
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: InkWell(
+                onTap: () => Navigator.pushNamed(context, '/cart'),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Icon(Icons.shopping_cart, color: kDeepBlue),
+                    ),
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Consumer<CartProvider>(
+                        builder: (_, cart, __) => cart.totalItems > 0
+                            ? Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '${cart.totalItems}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -481,23 +280,18 @@ class MenuScreen extends StatelessWidget {
 
         body: Column(
           children: [
-            // ⬇️ TabBar moved OUT of AppBar to avoid clipping
+            // fixed-width 4 tabs (no horizontal scroll)
             Material(
               color: kAqua,
               child: TabBar(
-                // all four tabs share width equally (no scrolling)
                 isScrollable: false,
                 labelPadding: EdgeInsets.zero,
-                labelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                labelStyle:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                unselectedLabelStyle:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 labelColor: kDeepBlue,
-                unselectedLabelColor: Color(0xFF2B5B66),
+                unselectedLabelColor: const Color(0xFF2B5B66),
                 indicatorColor: kDeepBlue,
                 indicatorWeight: 3,
                 tabs: const [
@@ -507,10 +301,8 @@ class MenuScreen extends StatelessWidget {
                   Tab(text: 'Desserts'),
                 ],
               ),
-            )
-            ,
+            ),
 
-            // content
             const Expanded(
               child: TabBarView(
                 children: [
@@ -541,7 +333,6 @@ class _SectionView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Optional section header bar (nice on wide screens)
         Container(
           padding: const EdgeInsets.only(bottom: 8),
           decoration: const BoxDecoration(
@@ -602,10 +393,10 @@ class _AppBottomBar extends StatelessWidget {
     if (i == activeIndex) return;
     switch (i) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/'); // Home
+        Navigator.pushReplacementNamed(context, '/'); // Home (if you have one)
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profile');
+        Navigator.pushReplacementNamed(context, '/profile'); // if you add it
         break;
       case 2:
         Navigator.pushNamed(context, '/cart');
@@ -615,22 +406,54 @@ class _AppBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartCount = context.watch<CartProvider>().totalItems;
+
     return BottomNavigationBar(
       currentIndex: activeIndex,
       onTap: (i) => _go(context, i),
       backgroundColor: kAqua,
       selectedItemColor: kDeepBlue,
       unselectedItemColor: kDeepBlue.withOpacity(0.6),
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_basket_rounded), label: ''),
+      items: [
+        const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
+        const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
+        BottomNavigationBarItem(
+          label: '',
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(Icons.shopping_basket_rounded),
+              if (cartCount > 0)
+                Positioned(
+                  right: -6,
+                  top: -3,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      '$cartCount',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
 }
 
-/* ---------- Card + image (unchanged, with chip wrap fix) ---------- */
+/* ---------- Menu card ---------- */
 
 class _MenuCard extends StatefulWidget {
   final MenuCardData data;
@@ -690,21 +513,11 @@ class _MenuCardState extends State<_MenuCard> {
             const SizedBox(height: 6),
             Text(d.description, style: const TextStyle(color: Colors.black87, fontSize: 13.5)),
             const SizedBox(height: 6),
-            Text(
-              'Allergens: ${d.allergens}',
-              style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5),
-            ),
+            Text('Allergens: ${d.allergens}', style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5)),
             const SizedBox(height: 8),
 
             for (final g in d.choices) ...[
-              Text(
-                g.title,
-                style: const TextStyle(
-                  color: kDeepBlue,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-              ),
+              Text(g.title, style: const TextStyle(color: kDeepBlue, fontWeight: FontWeight.w700, fontSize: 13)),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 8,
@@ -761,6 +574,9 @@ class _MenuCardState extends State<_MenuCard> {
                     for (final e in multi.entries) ...e.value,
                     for (final e in single.entries) '${e.key}: ${e.value}',
                   ];
+
+                  final addedQty = qty; // capture before reset
+
                   context.read<CartProvider>().add(
                     MenuItem(
                       id: d.id,
@@ -770,11 +586,14 @@ class _MenuCardState extends State<_MenuCard> {
                       category: '',
                       options: const [],
                     ),
-                    qty: qty,
+                    qty: addedQty,
                     selected: selected,
                   );
+
+                  setState(() => qty = 1); // reset after adding
+
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${d.name} ×$qty added to cart')),
+                    SnackBar(content: Text('${d.name} ×$addedQty added to cart')),
                   );
                 },
                 style: FilledButton.styleFrom(

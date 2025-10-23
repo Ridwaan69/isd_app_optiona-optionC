@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// your existing screens
+
 import 'login.dart';             // LandingScreen, CustomerLoginScreen, AdminLoginScreen
 import 'signup_screen.dart';     // SignUpScreen
 import 'homepage.dart';          // HomePage
@@ -9,7 +9,7 @@ import 'profile_settings.dart';  // ProfileSettingsScreen
 import 'menu.dart';              // MenuScreen
 import 'cart.dart';         // CartScreen
 
-// new
+
 import 'checkout.dart';          // ✅ CheckoutScreen
 import 'cart_provider.dart';     // ✅ CartProvider (state)
 
@@ -55,7 +55,7 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        // keep your current entry
+        
         home: const LandingScreen(),
         routes: {
           '/login/customer': (_) => const CustomerLoginScreen(),

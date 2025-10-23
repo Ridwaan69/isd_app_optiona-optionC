@@ -127,7 +127,6 @@ class _CartBody extends StatelessWidget {
           ),
         ),
 
-        // Summary
         Container(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           decoration: BoxDecoration(
@@ -220,7 +219,7 @@ class _EmptyCart extends StatelessWidget {
   }
 }
 
-/* ---------- Small UI helpers ---------- */
+
 
 class _Thumb extends StatelessWidget {
   final String imageUrl;

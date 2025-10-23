@@ -144,7 +144,7 @@ final _sections = <MenuSectionData>[
       id: 'main_lobster',
       name: 'Grilled Lobster',
       price: 1505.70,
-      image: 'lib/images/Grilled Lobster.jpg',
+      image: 'lib/images/Grilled Lobster.jpeg',
       description: 'Fresh lobster grilled with garlic butter and lemon.',
       allergens: 'Shellfish',
       choices: [

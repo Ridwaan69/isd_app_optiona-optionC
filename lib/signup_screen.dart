@@ -51,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    
+
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;

@@ -1,7 +1,7 @@
 // lib/login_screens.dart
 import 'package:flutter/material.dart';
 
-// ---- Theme bits just for the auth screens ----
+
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
 
@@ -21,7 +21,7 @@ InputDecoration _authInput(String label) => InputDecoration(
   ),
 );
 
-// Reusable card that matches the screenshot style
+
 class AuthCard extends StatelessWidget {
   final String title;
   final Widget form;

@@ -23,7 +23,7 @@ class MenuCardData {
   final String id;
   final String name;
   final double price;
-  final String image; // asset path or http url
+  final String image;
   final String description;
   final String allergens;
   final List<ChoiceGroup> choices;
@@ -441,8 +441,6 @@ final _sections = <MenuSectionData>[
 ];
 
 
-/* ---------- Helpers ---------- */
-
 double _adaptiveCardHeight(BuildContext context) {
   final h = MediaQuery.of(context).size.height;
   final proposed = h * 0.95; // more space on tiny phones
@@ -521,7 +519,6 @@ class MenuScreen extends StatelessWidget {
 
         body: Column(
           children: [
-            // fixed-width 4 tabs (no horizontal scroll)
             Material(
               color: kAqua,
               child: TabBar(
@@ -624,7 +621,6 @@ class _SectionView extends StatelessWidget {
   }
 }
 
-/* ---------- Bottom bar (reused) ---------- */
 
 class _AppBottomBar extends StatelessWidget {
   final int activeIndex; // 0: home, 1: profile, 2: cart
@@ -634,10 +630,10 @@ class _AppBottomBar extends StatelessWidget {
     if (i == activeIndex) return;
     switch (i) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/'); // Home (if you have one)
+        Navigator.pushReplacementNamed(context, '/'); // Home
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/profile'); // if you add it
+        Navigator.pushReplacementNamed(context, '/profile'); 
         break;
       case 2:
         Navigator.pushNamed(context, '/cart');

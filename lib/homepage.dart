@@ -1,7 +1,7 @@
 // lib/homepage.dart
 import 'package:flutter/material.dart';
 
-// Local colors so this file compiles by itself
+// Local colors
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: kAqua,
 
-      /* Drawer (hamburger menu) */
+
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
 
-      /* Body: three pill buttons like your mock */
+      /* Body:*/
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
           setState(() => _tab = i);
           switch (i) {
             case 0:
-            // stay on Home
+
               break;
             case 1:
               Navigator.pushNamed(context, '/profile');

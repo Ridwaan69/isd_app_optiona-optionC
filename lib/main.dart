@@ -55,7 +55,7 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        
+
         home: const LandingScreen(),
         routes: {
           '/login/customer': (_) => const CustomerLoginScreen(),

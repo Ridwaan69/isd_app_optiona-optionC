@@ -1,7 +1,7 @@
 // lib/signup_screen.dart
 import 'package:flutter/material.dart';
 
-/// Colors to match your other screens
+
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
 
@@ -51,13 +51,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    // TODO: replace with your API call to create account
+    
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
     setState(() => _loading = false);
 
-    // After successful sign-up, go to the login screen (as in the mockup text)
+
     Navigator.pushReplacementNamed(context, '/login/customer');
   }
 
@@ -88,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const Icon(Icons.account_circle_outlined, size: 96, color: _deepBlue),
                       const SizedBox(height: 12),
 
-                      // First / Last name (side-by-side like the mockup)
+                      // First / Last name
                       LayoutBuilder(
                         builder: (context, c) {
                           final twoCols = c.maxWidth >= 360;

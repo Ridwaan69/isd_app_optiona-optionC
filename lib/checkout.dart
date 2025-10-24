@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
 
+// ⬇️ add this import for the footer
+import '/app_bottom_bar.dart';
+
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
@@ -22,6 +25,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     final subtotal = context.watch<CartProvider>().subtotal;
     const currency = 'Rs ';
+    const deliveryCharge = 50.0;
+    const discount = 0.0;
+    final total =
+    (subtotal + deliveryCharge - discount).clamp(0, double.infinity) as double;
 
     return Scaffold(
       backgroundColor: kAqua,
@@ -130,7 +137,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
               const Spacer(),
               Text(
-                '$currency${subtotal.toStringAsFixed(2)}',
+                '$currency${total.toStringAsFixed(2)}',
                 style:
                 const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
@@ -157,20 +164,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 final ok = await showDialog<bool>(
                   context: context,
                   builder: (_) => AlertDialog(
-                    title: const Text('Confirm payment'),
-                    content: Text(_method == PaymentMethod.cash
-                        ? 'You chose Cash. Confirm the order?'
-                        : 'Pay with **** **** **** ${_savedCard!.last4}?'),
+                    title: Text(
+                      _method == PaymentMethod.cash
+                          ? 'Confirm Order '
+                          : 'Confirm payment',
+                    ),
+                    content: Text(
+                      _method == PaymentMethod.cash
+                          ? 'You chose Cash. Confirm the order? Payment will be done upon on delivery'
+                          : 'Pay with **** **** **** ${_savedCard!.last4}?',
+                    ),
                     actions: [
-                      TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel')),
-                      FilledButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Confirm')),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.grey.shade300, // 👈 background color for Cancel
+                                foregroundColor: Colors.black, // text color
+                              ),
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF146C72), // your deep blue
+                              ),
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Confirm'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 );
+
+
                 if (ok == true && context.mounted) {
                   context.read<CartProvider>().clear();
                   if (!mounted) return;
@@ -179,7 +212,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     builder: (_) => AlertDialog(
                       icon: const Icon(Icons.check_circle,
                           size: 48, color: Colors.green),
-                      title: const Text('Payment successful'),
+                      title: Text(
+                        _method == PaymentMethod.cash
+                            ? 'Order confirmed'
+                            : 'Payment Successful',
+                      ),
                       content: const Text('Your order has been placed!'),
                       actions: [
                         FilledButton(
@@ -193,11 +230,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Navigator.pop(context); // back to cart
                 }
               },
-              child: const Text('Pay and Confirm'),
+              child:Text(
+    _method == PaymentMethod.cash
+    ? 'Confirm Order'
+        : 'Confirm Order and Pay',
+    ),
             ),
           ),
         ],
       ),
+
+      // ⬇️ footer (bottom navigation) ONLY on checkout
+      bottomNavigationBar:  AppBottomBar(activeIndex: 2),
     );
   }
 }

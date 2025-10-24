@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
+import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -467,55 +468,10 @@ class MenuScreen extends StatelessWidget {
           backgroundColor: kAqua,
           centerTitle: true,
           title: const Text('SEAFEAST Menu'),
-          actions: [
-            // AppBar cart icon with live badge
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: InkWell(
-                onTap: () => Navigator.pushNamed(context, '/cart'),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Icon(Icons.shopping_cart, color: kDeepBlue),
-                    ),
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Consumer<CartProvider>(
-                        builder: (_, cart, __) => cart.totalItems > 0
-                            ? Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            '${cart.totalItems}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        )
-                            : const SizedBox.shrink(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+
         ),
 
-        bottomNavigationBar: const _AppBottomBar(activeIndex: 0),
+        bottomNavigationBar:  AppBottomBar(activeIndex: 0),
 
         body: Column(
           children: [
@@ -630,7 +586,7 @@ class _AppBottomBar extends StatelessWidget {
     if (i == activeIndex) return;
     switch (i) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/'); // Home
+        Navigator.pushReplacementNamed(context, '/home'); // Home
         break;
       case 1:
         Navigator.pushReplacementNamed(context, '/profile');

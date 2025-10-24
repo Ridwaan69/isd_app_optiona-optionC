@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -18,8 +19,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
 
   final _nameCtrl = TextEditingController(text: 'Peter Parker');
-  final _emailCtrl = TextEditingController(text: 'XXXXXXXX@gmail.com');
-  final _dobCtrl = TextEditingController(text: '23/05/19XX');
+  final _emailCtrl = TextEditingController(text: 'peter.parker@gmail.com');
+  final _dobCtrl = TextEditingController(text: '23/05/2000');
 
   Uint8List? _photoBytes; // for mobile & web
   final _picker = ImagePicker();
@@ -127,9 +128,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         backgroundColor: kAqua,
         centerTitle: true,
         title: const Text('Profile'),
-        actions: const [Padding(padding: EdgeInsets.only(right: 12), child: Icon(Icons.person_outline))],
+
       ),
-      bottomNavigationBar: const _AppBottomBar(activeIndex: 1),
+      bottomNavigationBar: AppBottomBar(activeIndex: 1),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),

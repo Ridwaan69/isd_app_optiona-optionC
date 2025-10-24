@@ -1,5 +1,7 @@
 // lib/homepage.dart
 import 'package:flutter/material.dart';
+import 'app_bottom_bar.dart'; // <-- added
+
 
 // Local colors
 const kAqua = Color(0xFFBDEDF0);
@@ -20,7 +22,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: kAqua,
 
-
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -36,56 +37,27 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 6),
-                  Text('Welcome!', style: TextStyle(color: Colors.white70)),
+                  Text('Welcome Peter Parker!', style: TextStyle(color: Colors.white70)),
                 ],
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.restaurant_menu),
-              title: const Text('Browse menu'),
-              onTap: () => Navigator.pushNamed(context, '/menu'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.event_seat),
-              title: const Text('Reserve Table'),
-              onTap: () => Navigator.pushNamed(context, '/reserve'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_outline),
-              title: const Text('View Profile'),
-              onTap: () => Navigator.pushNamed(context, '/profile'),
             ),
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Log out'),
-              onTap: () => Navigator.pushReplacementNamed(context, '/login/customer'),
+              onTap: () => Navigator.pushReplacementNamed(context, '/'),
             ),
           ],
         ),
       ),
 
-      /* Top AppBar */
       appBar: AppBar(
         backgroundColor: kAqua,
         elevation: 0,
         centerTitle: true,
         title: const Text('Home'),
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle_outlined),
-            onPressed: () => Navigator.pushNamed(context, '/profile'),
-          ),
-        ],
       ),
 
-      /* Body:*/
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -117,32 +89,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      /* Bottom nav: Home / Profile / Cart */
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tab,
-        backgroundColor: const Color(0xFF9BD7DA),
-        selectedItemColor: kDeepBlue,
-        unselectedItemColor: Colors.black54,
-        onTap: (i) {
-          setState(() => _tab = i);
-          switch (i) {
-            case 0:
-
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/profile');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/cart');
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_basket_outlined), label: ''),
-        ],
+      // ---------- CHANGED: use AppBottomBar ----------
+      bottomNavigationBar: AppBottomBar(
+        activeIndex: 0
       ),
+      // ----------------------------------------------
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
 
-// ⬇️ add this import for the footer
+// ⬇️ added this import for the footer
 import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);

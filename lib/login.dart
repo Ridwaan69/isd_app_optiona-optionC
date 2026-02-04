@@ -1,6 +1,8 @@
-// lib/login_screens.dart
+// lib/login_updated.dart
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'language_provider.dart';
+import 'app_localizations.dart';
 
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
@@ -20,7 +22,6 @@ InputDecoration _authInput(String label) => InputDecoration(
     borderSide: const BorderSide(color: _deepBlue, width: 1.6),
   ),
 );
-
 
 class AuthCard extends StatelessWidget {
   final String title;
@@ -78,11 +79,14 @@ class AuthCard extends StatelessWidget {
 
 // --------- Screens ---------
 
-/// Welcome with Customer/Admin buttons
+/// Welcome with Customer/Admin buttons + Language Dropdown
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final languageProvider = context.watch<LanguageProvider>();
+
     return Scaffold(
       backgroundColor: _aqua,
       body: SafeArea(
@@ -94,8 +98,71 @@ class LandingScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Language Dropdown at Top
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _deepBlue.withOpacity(0.3)),
+                      ),
+                      child: DropdownButton<String>(
+                        value: languageProvider.currentLocale.languageCode,
+                        icon: const Icon(Icons.arrow_drop_down, color: _deepBlue),
+                        underline: const SizedBox(),
+                        style: const TextStyle(
+                          color: _deepBlue,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'fr',
+                            child: Row(
+                              children: [
+                                Text('🇫🇷', style: TextStyle(fontSize: 18)),
+                                SizedBox(width: 8),
+                                Text('Français'),
+                              ],
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: 'en',
+                            child: Row(
+                              children: [
+                                Text('🇬🇧', style: TextStyle(fontSize: 18)),
+                                SizedBox(width: 8),
+                                Text('English'),
+                              ],
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: 'es',
+                            child: Row(
+                              children: [
+                                Text('🇪🇸', style: TextStyle(fontSize: 18)),
+                                SizedBox(width: 8),
+                                Text('Español'),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            languageProvider.changeLanguage(value);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
                   Container(
-                    width: 110, height: 110,
+                    width: 110,
+                    height: 110,
                     decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
                     alignment: Alignment.center,
                     child: const Text('Sea\nFeast',
@@ -103,17 +170,19 @@ class LandingScreen extends StatelessWidget {
                         style: TextStyle(color: _deepBlue, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1)),
                   ),
                   const SizedBox(height: 18),
-                  const Text('Welcome to SeaFeast',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _deepBlue)),
+                  Text(
+                    _getWelcomeText(languageProvider.currentLocale.languageCode),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _deepBlue),
+                  ),
                   const SizedBox(height: 28),
                   FilledButton(
                     onPressed: () => Navigator.pushNamed(context, '/login/customer'),
-                    child: const Text('Customer'),
+                    child: Text(_getCustomerText(languageProvider.currentLocale.languageCode)),
                   ),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Navigator.pushNamed(context, '/login/admin'),
-                    child: const Text('Admin'),
+                    child: Text(_getAdminText(languageProvider.currentLocale.languageCode)),
                   ),
                 ],
               ),
@@ -123,6 +192,32 @@ class LandingScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _getWelcomeText(String lang) {
+    switch (lang) {
+      case 'fr':
+        return 'Bienvenue à SeaFeast';
+      case 'es':
+        return 'Bienvenido a SeaFeast';
+      default:
+        return 'Welcome to SeaFeast';
+    }
+  }
+
+  String _getCustomerText(String lang) {
+    switch (lang) {
+      case 'fr':
+        return 'Client';
+      case 'es':
+        return 'Cliente';
+      default:
+        return 'Customer';
+    }
+  }
+
+  String _getAdminText(String lang) {
+    return 'Admin';
+  }
 }
 
 /// Customer: Email + Password
@@ -131,6 +226,7 @@ class CustomerLoginScreen extends StatefulWidget {
   @override
   State<CustomerLoginScreen> createState() => _CustomerLoginScreenState();
 }
+
 class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
   final _form = GlobalKey<FormState>();
   String email = '', pw = '';
@@ -141,19 +237,21 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
     setState(() => loading = true);
     await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/home'); // <-- go to Home
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: _aqua,
       body: SafeArea(
         child: AuthCard(
-          title: 'Sign in to your account',
+          title: loc.signIn,
           onBack: () => Navigator.pop(context),
           onPrimary: loading ? (){} : _submit,
-          primaryText: loading ? 'Signing in...' : 'SIGN IN',
+          primaryText: loading ? 'Signing in...' : loc.login,
           footer: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -162,7 +260,6 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                 onPressed: () => Navigator.pushNamed(context, '/signup'),
                 child: const Text('Sign up'),
               ),
-
             ],
           ),
           form: Form(
@@ -170,14 +267,14 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
             child: Column(
               children: [
                 TextFormField(
-                  decoration: _authInput('Email'),
+                  decoration: _authInput(loc.email),
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (v) => email = v.trim(),
                   validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
-                  decoration: _authInput('Password'),
+                  decoration: _authInput(loc.password),
                   obscureText: true,
                   onChanged: (v) => pw = v,
                   validator: (v) => (v == null || v.length < 4) ? 'Min 4 characters' : null,
@@ -197,6 +294,7 @@ class AdminLoginScreen extends StatefulWidget {
   @override
   State<AdminLoginScreen> createState() => _AdminLoginScreenState();
 }
+
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _form = GlobalKey<FormState>();
   String staffId = '', pw = '';
@@ -207,32 +305,33 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     setState(() => loading = true);
     await Future.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/home'); // <-- go to Home
+    Navigator.pushReplacementNamed(context, '/home');
   }
-
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: _aqua,
       body: SafeArea(
         child: AuthCard(
-          title: 'Admin Log in',
+          title: loc.adminLogin,
           onBack: () => Navigator.pop(context),
           onPrimary: loading ? (){} : _submit,
-          primaryText: loading ? 'Signing in...' : 'SIGN IN',
+          primaryText: loading ? 'Signing in...' : loc.login,
           form: Form(
             key: _form,
             child: Column(
               children: [
                 TextFormField(
-                  decoration: _authInput('Staff ID'),
+                  decoration: _authInput(loc.staffId),
                   onChanged: (v) => staffId = v.trim(),
                   validator: (v) => (v == null || v.isEmpty) ? 'Enter Staff ID' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
-                  decoration: _authInput('Password'),
+                  decoration: _authInput(loc.password),
                   obscureText: true,
                   onChanged: (v) => pw = v,
                   validator: (v) => (v == null || v.length < 4) ? 'Min 4 characters' : null,

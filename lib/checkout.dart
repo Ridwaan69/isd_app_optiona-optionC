@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
-
-// ⬇️ added this import for the footer
 import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
@@ -180,8 +178,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Expanded(
                             child: FilledButton(
                               style: FilledButton.styleFrom(
-                                backgroundColor: Colors.grey.shade300, // 👈 background color for Cancel
-                                foregroundColor: Colors.black, // text color
+                                backgroundColor: Colors.grey.shade300,
+                                foregroundColor: Colors.black,
                               ),
                               onPressed: () => Navigator.pop(context, false),
                               child: const Text('Cancel'),
@@ -191,7 +189,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Expanded(
                             child: FilledButton(
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF146C72), // your deep blue
+                                backgroundColor: const Color(0xFF146C72),
                               ),
                               onPressed: () => Navigator.pop(context, true),
                               child: const Text('Confirm'),
@@ -203,7 +201,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 );
 
-
+                // ========== UPDATED SUCCESS DIALOG WITH FEEDBACK PROMPT ==========
                 if (ok == true && context.mounted) {
                   context.read<CartProvider>().clear();
                   if (!mounted) return;
@@ -217,31 +215,70 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ? 'Order confirmed'
                             : 'Payment Successful',
                       ),
-                      content: const Text('Your order has been placed!'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Your order has been placed!'),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Would you like to rate your experience?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                       actions: [
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('OK'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.grey),
+                                  foregroundColor: Colors.black87,
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context); // Close dialog
+                                  Navigator.pop(context); // Back to cart
+                                },
+                                child: const Text('Maybe Later'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF146C72),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context); // Close dialog
+                                  Navigator.pop(context); // Back to cart
+                                  Navigator.pushNamed(context, '/feedback'); // Open feedback
+                                },
+                                child: const Text('Rate Now'),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   );
-                  if (!mounted) return;
-                  Navigator.pop(context); // back to cart
+                  // ========== END OF UPDATED SECTION ==========
                 }
               },
-              child:Text(
-    _method == PaymentMethod.cash
-    ? 'Confirm Order'
-        : 'Confirm Order and Pay',
-    ),
+              child: Text(
+                _method == PaymentMethod.cash
+                    ? 'Confirm Order'
+                    : 'Confirm Order and Pay',
+              ),
             ),
           ),
         ],
       ),
-
-      // ⬇️ footer (bottom navigation) ONLY on checkout
-      bottomNavigationBar:  AppBottomBar(activeIndex: 2),
+      bottomNavigationBar: AppBottomBar(activeIndex: 2),
     );
   }
 }
@@ -250,8 +287,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
 class CardInfo {
   final String holderName;
-  final String number; // e.g. "2134 1234 1234 1234"
-  final String exp;    // "mm/yyyy"
+  final String number;
+  final String exp;
   final String cvc;
 
   CardInfo({

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
-
-// ⬇️ added this import for the footer
 import '/app_bottom_bar.dart';
+import 'app_localizations.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -23,6 +22,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final subtotal = context.watch<CartProvider>().subtotal;
     const currency = 'Rs ';
     const deliveryCharge = 50.0;
@@ -35,21 +35,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       appBar: AppBar(
         backgroundColor: kAqua,
         centerTitle: true,
-        title: const Text('Checkout'),
+        title: Text(loc.checkout),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
           const SizedBox(height: 6),
-          const Text('Choose your payment option',
-              style: TextStyle(fontWeight: FontWeight.w600)),
+          Text(loc.paymentOption,
+              style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
 
           Row(
             children: [
               Expanded(
                 child: _PaymentTile(
-                  label: 'Cash',
+                  label: loc.cash,
                   icon: Icons.payments_outlined,
                   selected: _method == PaymentMethod.cash,
                   onTap: () => setState(() => _method = PaymentMethod.cash),
@@ -58,7 +58,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _PaymentTile(
-                  label: 'Mastercard',
+                  label: loc.card,
                   icon: Icons.credit_card,
                   selected: _method == PaymentMethod.card,
                   onTap: () => setState(() => _method = PaymentMethod.card),
@@ -92,7 +92,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         alignment: Alignment.bottomLeft,
                         child: Text(
                           _savedCard == null
-                              ? 'No master card added'
+                              ? loc.noCard
                               : '**** **** **** ${_savedCard!.last4}',
                           style: const TextStyle(
                               color: Colors.white, fontSize: 18),
@@ -103,14 +103,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 12),
                   Text(
                     _savedCard == null
-                        ? 'You can add a mastercard and save it for later'
-                        : 'Card holder: ${_savedCard!.holderName}',
+                        ? loc.addCard
+                        : '${loc.cardHolder}: ${_savedCard!.holderName}',
                     style: const TextStyle(color: Colors.black54),
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     icon: const Icon(Icons.add),
-                    label: Text(_savedCard == null ? 'ADD NEW' : 'REPLACE CARD'),
+                    label: Text(_savedCard == null ? loc.addNew : loc.replaceCard),
                     onPressed: () async {
                       final added = await Navigator.push<CardInfo>(
                         context,
@@ -121,7 +121,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       if (added != null && mounted) {
                         setState(() => _savedCard = added);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Card saved')),
+                          SnackBar(content: Text(loc.cardSaved)),
                         );
                       }
                     },
@@ -133,8 +133,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           const SizedBox(height: 20),
           Row(
             children: [
-              const Text('TOTAL:',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              Text('${loc.total.toUpperCase()}:',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
               const Spacer(),
               Text(
                 '$currency${total.toStringAsFixed(2)}',
@@ -156,8 +156,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               onPressed: () async {
                 if (_method == PaymentMethod.card && _savedCard == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please add a card or choose Cash')),
+                    SnackBar(content: Text(loc.pleaseAddCardOrCash)),
                   );
                   return;
                 }
@@ -166,13 +165,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   builder: (_) => AlertDialog(
                     title: Text(
                       _method == PaymentMethod.cash
-                          ? 'Confirm Order '
-                          : 'Confirm payment',
+                          ? loc.confirmOrder
+                          : loc.confirmPayment,
                     ),
                     content: Text(
                       _method == PaymentMethod.cash
-                          ? 'You chose Cash. Confirm the order? Payment will be done upon on delivery'
-                          : 'Pay with **** **** **** ${_savedCard!.last4}?',
+                          ? loc.youChoseCash
+                          : '${loc.payWithCard} ${_savedCard!.last4}?',
                     ),
                     actions: [
                       Row(
@@ -180,21 +179,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           Expanded(
                             child: FilledButton(
                               style: FilledButton.styleFrom(
-                                backgroundColor: Colors.grey.shade300, // 👈 background color for Cancel
-                                foregroundColor: Colors.black, // text color
+                                backgroundColor: Colors.grey.shade300,
+                                foregroundColor: Colors.black,
                               ),
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Cancel'),
+                              child: Text(loc.cancel),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: FilledButton(
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF146C72), // your deep blue
+                                backgroundColor: const Color(0xFF146C72),
                               ),
                               onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Confirm'),
+                              child: Text(loc.confirm),
                             ),
                           ),
                         ],
@@ -202,7 +201,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ],
                   ),
                 );
-
 
                 if (ok == true && context.mounted) {
                   context.read<CartProvider>().clear();
@@ -214,34 +212,72 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           size: 48, color: Colors.green),
                       title: Text(
                         _method == PaymentMethod.cash
-                            ? 'Order confirmed'
-                            : 'Payment Successful',
+                            ? loc.orderConfirmed
+                            : loc.paymentSuccessful,
                       ),
-                      content: const Text('Your order has been placed!'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(loc.orderPlaced),
+                          const SizedBox(height: 16),
+                          Text(
+                            loc.wouldYouRate,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                       actions: [
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('OK'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.grey),
+                                  foregroundColor: Colors.black87,
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                child: Text(loc.maybeLater),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF146C72),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pushNamed(context, '/feedback');
+                                },
+                                child: Text(loc.rateNow),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   );
-                  if (!mounted) return;
-                  Navigator.pop(context); // back to cart
                 }
               },
-              child:Text(
-    _method == PaymentMethod.cash
-    ? 'Confirm Order'
-        : 'Confirm Order and Pay',
-    ),
+              child: Text(
+                _method == PaymentMethod.cash
+                    ? loc.confirmOrder
+                    : loc.confirmOrderBtn,
+              ),
             ),
           ),
         ],
       ),
-
-      // ⬇️ footer (bottom navigation) ONLY on checkout
-      bottomNavigationBar:  AppBottomBar(activeIndex: 2),
+      bottomNavigationBar: AppBottomBar(activeIndex: 2),
     );
   }
 }
@@ -250,8 +286,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
 class CardInfo {
   final String holderName;
-  final String number; // e.g. "2134 1234 1234 1234"
-  final String exp;    // "mm/yyyy"
+  final String number;
+  final String exp;
   final String cvc;
 
   CardInfo({
@@ -304,28 +340,30 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: kAqua,
       appBar: AppBar(
         backgroundColor: kAqua,
         centerTitle: true,
-        title: const Text('Add Card'),
+        title: Text(loc.addCardTitle),
       ),
       body: Form(
         key: _form,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           children: [
-            const _FieldLabel('CARD HOLDER NAME'),
+            _FieldLabel(loc.cardHolderName),
             TextFormField(
               controller: _name,
               decoration: _input('Peter Parker'),
               validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Required' : null,
+              (v == null || v.trim().isEmpty) ? loc.required : null,
             ),
             const SizedBox(height: 14),
 
-            const _FieldLabel('CARD NUMBER'),
+            _FieldLabel(loc.cardNumber),
             TextFormField(
               controller: _number,
               keyboardType: TextInputType.number,
@@ -336,7 +374,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
               decoration: _input('2134 1234 1234 1234'),
               validator: (v) =>
               (v == null || v.replaceAll(' ', '').length < 16)
-                  ? 'Enter a valid number'
+                  ? loc.enterValidNumber
                   : null,
             ),
             const SizedBox(height: 14),
@@ -347,7 +385,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _FieldLabel('EXPIRE DATE'),
+                      _FieldLabel(loc.expireDate),
                       TextFormField(
                         controller: _exp,
                         keyboardType: TextInputType.number,
@@ -358,7 +396,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                         decoration: _input('mm/yyyy'),
                         validator: (v) =>
                         (v == null || !RegExp(r'^\d{2}/\d{4}$').hasMatch(v))
-                            ? 'Invalid date'
+                            ? loc.invalidDate
                             : null,
                       ),
                     ],
@@ -369,7 +407,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _FieldLabel('CVC'),
+                      _FieldLabel(loc.cvc),
                       TextFormField(
                         controller: _cvc,
                         keyboardType: TextInputType.number,
@@ -379,7 +417,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                         ],
                         decoration: _input('***'),
                         validator: (v) =>
-                        (v == null || v.length < 3) ? 'Invalid CVC' : null,
+                        (v == null || v.length < 3) ? loc.invalidCvc : null,
                       ),
                     ],
                   ),
@@ -406,7 +444,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   );
                   Navigator.pop(context, card);
                 },
-                child: const Text('Add and Make Payment'),
+                child: Text(loc.addAndPay),
               ),
             ),
           ],

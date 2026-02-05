@@ -1,7 +1,11 @@
+// lib/profile_settings_updated.dart
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'app_localizations.dart';
+import 'language_provider.dart';
 import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
@@ -17,13 +21,25 @@ class ProfileSettingsScreen extends StatefulWidget {
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final _formKey = GlobalKey<FormState>();
 
-
   final _nameCtrl = TextEditingController(text: 'Peter Parker');
   final _emailCtrl = TextEditingController(text: 'peter.parker@gmail.com');
   final _dobCtrl = TextEditingController(text: '23/05/2000');
 
-  Uint8List? _photoBytes; // for mobile & web
+  Uint8List? _photoBytes;
   final _picker = ImagePicker();
+
+  String _flagFor(String code) {
+    switch (code) {
+      case 'fr':
+        return '🇫🇷';
+      case 'en':
+        return '🇬🇧';
+      case 'es':
+        return '🇪🇸';
+      default:
+        return '🌐';
+    }
+  }
 
   @override
   void dispose() {
@@ -62,7 +78,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               title: const Text('Choose from gallery'),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
-            if (!kIsWeb) // camera not supported on some web targets
+            if (!kIsWeb)
               ListTile(
                 leading: const Icon(Icons.photo_camera),
                 title: const Text('Take a photo'),
@@ -90,7 +106,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       lastDate: now,
       helpText: 'Select Date of Birth',
       builder: (context, child) {
-
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
@@ -111,24 +126,78 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     }
   }
 
+  Future<void> _showLanguageDialog() async {
+    final langProvider = context.read<LanguageProvider>();
+    final loc = AppLocalizations.of(context);
+
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(loc.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _LanguageOption(
+              languageCode: 'en',
+              languageName: loc.english,
+              currentCode: langProvider.currentLocale.languageCode,
+              onTap: () {
+                langProvider.changeLanguage('en');
+                Navigator.pop(context);
+              },
+            ),
+            const Divider(),
+            _LanguageOption(
+              languageCode: 'fr',
+              languageName: loc.french,
+              currentCode: langProvider.currentLocale.languageCode,
+              onTap: () {
+                langProvider.changeLanguage('fr');
+                Navigator.pop(context);
+              },
+            ),
+            const Divider(),
+            _LanguageOption(
+              languageCode: 'es',
+              languageName: loc.spanish,
+              currentCode: langProvider.currentLocale.languageCode,
+              onTap: () {
+                langProvider.changeLanguage('es');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
-
+    final loc = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile saved')),
+      SnackBar(content: Text(loc.profileSaved)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final langProvider = context.watch<LanguageProvider>();
+
     return Scaffold(
       backgroundColor: kAqua,
       appBar: AppBar(
         backgroundColor: kAqua,
         centerTitle: true,
-        title: const Text('Profile'),
-
+        title: Text(loc.profile),
       ),
       bottomNavigationBar: AppBottomBar(activeIndex: 1),
       body: SafeArea(
@@ -180,15 +249,17 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _FieldLabel('Name'),
+                  _FieldLabel(loc.name),
                   TextFormField(
                     controller: _nameCtrl,
                     decoration: _inputStyle(),
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter your name' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Please enter your name'
+                        : null,
                   ),
                   const SizedBox(height: 16),
 
-                  const _FieldLabel('Email'),
+                  _FieldLabel(loc.email),
                   TextFormField(
                     controller: _emailCtrl,
                     decoration: _inputStyle(
@@ -204,7 +275,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  const _FieldLabel('Date of Birth'),
+                  _FieldLabel(loc.dateOfBirth),
                   InkWell(
                     onTap: _pickDob,
                     child: IgnorePointer(
@@ -218,17 +289,67 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // Language Selection (FR4)
+                  _FieldLabel(loc.language),
+                  InkWell(
+                    onTap: _showLanguageDialog,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black.withOpacity(0.12),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            _flagFor(langProvider.currentLocale.languageCode),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            langProvider.currentLanguageName,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const Spacer(),
+                          const Icon(Icons.arrow_drop_down, color: kDeepBlue),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 28),
+
+                  // Feedback Button
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: kDeepBlue, width: 2),
+                      foregroundColor: kDeepBlue,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    icon: const Icon(Icons.rate_review),
+                    label: Text(loc.giveFeedback),
+                    onPressed: () => Navigator.pushNamed(context, '/feedback'),
+                  ),
+                  const SizedBox(height: 16),
 
                   SizedBox(
                     height: 48,
                     child: FilledButton(
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF2E3A59),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       onPressed: _save,
-                      child: const Text('Save changes'),
+                      child: Text(loc.saveChanges),
                     ),
                   ),
                 ],
@@ -258,7 +379,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
 class _FieldLabel extends StatelessWidget {
   final String text;
-  const _FieldLabel(this.text, {super.key});
+  const _FieldLabel(this.text);
 
   @override
   Widget build(BuildContext context) {
@@ -276,42 +397,52 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
+class _LanguageOption extends StatelessWidget {
+  final String languageCode;
+  final String languageName;
+  final String currentCode;
+  final VoidCallback onTap;
 
-/* ---------- Bottom bar (same look) ---------- */
-class _AppBottomBar extends StatelessWidget {
-  final int activeIndex; // 0: home, 1: profile, 2: cart
-  const _AppBottomBar({required this.activeIndex});
+  const _LanguageOption({
+    required this.languageCode,
+    required this.languageName,
+    required this.currentCode,
+    required this.onTap,
+  });
 
-  void _go(BuildContext context, int i) {
-    if (i == activeIndex) return;
-    switch (i) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/home'); // Home
-        break;
-      case 1:
-
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/cart');
-        break;
+  String get _flag {
+    switch (languageCode) {
+      case 'fr':
+        return '🇫🇷';
+      case 'en':
+        return '🇬🇧';
+      case 'es':
+        return '🇪🇸';
+      default:
+        return '🌐';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: activeIndex,
-      onTap: (i) => _go(context, i),
-      backgroundColor: kAqua,
-      selectedItemColor: kDeepBlue,
-      unselectedItemColor: kDeepBlue.withOpacity(0.6),
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
-        BottomNavigationBarItem(icon: Icon(Icons.shopping_basket_rounded), label: ''),
-      ],
+    final isSelected = languageCode == currentCode;
+
+    return ListTile(
+      leading: Text(
+        _flag,
+        style: const TextStyle(fontSize: 20),
+      ),
+      title: Text(
+        languageName,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          color: isSelected ? kDeepBlue : Colors.black87,
+        ),
+      ),
+      trailing: isSelected
+          ? const Icon(Icons.check_circle, color: kDeepBlue)
+          : null,
+      onTap: onTap,
     );
   }
 }
-
-

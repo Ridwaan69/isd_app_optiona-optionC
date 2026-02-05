@@ -1,6 +1,9 @@
+// lib/cart_updated.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
+import 'app_localizations.dart';
+import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -15,12 +18,14 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: kAqua,
       appBar: AppBar(
         backgroundColor: kAqua,
         centerTitle: true,
-        title: const Text('Basket'),
+        title: Text(loc.basket),
       ),
       bottomNavigationBar: const _AppBottomBar(activeIndex: 2),
       body: const _CartBody(),
@@ -33,14 +38,14 @@ class _CartBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final cart = context.watch<CartProvider>();
     final lines = cart.lines;
 
-    if (lines.isEmpty) return const _EmptyCart();
+    if (lines.isEmpty) return _EmptyCart(loc: loc);
 
     final sub = cart.subtotal;
-    final total =
-    (sub + _deliveryCharge - _discount).clamp(0, double.infinity) as double;
+    final total = (sub + _deliveryCharge - _discount).clamp(0, double.infinity) as double;
 
     return Column(
       children: [
@@ -65,13 +70,13 @@ class _CartBody extends StatelessWidget {
                     context.read<CartProvider>().updateQty(i, q);
                   }
                 },
-                onPlus: () =>
-                    context.read<CartProvider>().updateQty(i, l.qty + 1),
+                onPlus: () => context.read<CartProvider>().updateQty(i, l.qty + 1),
               );
             },
           ),
         ),
         _SummaryPanel(
+          loc: loc,
           subtotal: sub,
           delivery: _deliveryCharge,
           discount: _discount,
@@ -84,7 +89,6 @@ class _CartBody extends StatelessWidget {
   }
 }
 
-/* ---------- Item Card ---------- */
 class _ItemCard extends StatelessWidget {
   final String name;
   final double price;
@@ -131,8 +135,7 @@ class _ItemCard extends StatelessWidget {
                   : Image.asset(
                 imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                const Icon(Icons.image_not_supported_outlined),
+                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_outlined),
               ),
             ),
           ),
@@ -144,8 +147,7 @@ class _ItemCard extends StatelessWidget {
                 Text(name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 15)),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                 const SizedBox(height: 6),
                 Text(
                   '$_currency${price.toStringAsFixed(2)}',
@@ -185,9 +187,7 @@ class _QtyPill extends StatelessWidget {
           _roundBtn(icon: Icons.remove, onTap: onMinus),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text('$qty',
-                style:
-                const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            child: Text('$qty', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           ),
           _roundBtn(icon: Icons.add, onTap: onPlus),
         ],
@@ -202,22 +202,20 @@ class _QtyPill extends StatelessWidget {
       child: Container(
         width: 26,
         height: 26,
-        decoration: const BoxDecoration(
-          color: kAqua,
-          shape: BoxShape.circle,
-        ),
+        decoration: const BoxDecoration(color: kAqua, shape: BoxShape.circle),
         child: Icon(icon, size: 18, color: kDeepBlue),
       ),
     );
   }
 }
 
-/* ---------- Summary Panel ---------- */
 class _SummaryPanel extends StatelessWidget {
+  final AppLocalizations loc;
   final double subtotal, delivery, discount, total;
   final VoidCallback onCheckout, onCancel;
 
   const _SummaryPanel({
+    required this.loc,
     required this.subtotal,
     required this.delivery,
     required this.discount,
@@ -239,8 +237,7 @@ class _SummaryPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Sub-Total',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(loc.subtotal, style: const TextStyle(fontWeight: FontWeight.w600)),
               const Spacer(),
               Text('$_currency${subtotal.toStringAsFixed(2)}'),
             ],
@@ -248,8 +245,7 @@ class _SummaryPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Text('Delivery Charge',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(loc.deliveryCharge, style: const TextStyle(fontWeight: FontWeight.w600)),
               const Spacer(),
               Text('$_currency${delivery.toStringAsFixed(2)}'),
             ],
@@ -257,8 +253,7 @@ class _SummaryPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Text('Discount',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(loc.discount, style: const TextStyle(fontWeight: FontWeight.w600)),
               const Spacer(),
               Text('$_currency${discount.toStringAsFixed(2)}'),
             ],
@@ -266,43 +261,33 @@ class _SummaryPanel extends StatelessWidget {
           const Divider(height: 20, thickness: 1),
           Row(
             children: [
-              const Text('Total',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              Text(loc.total, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
               const Spacer(),
               Text(
                 '$_currency${total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w900, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
             ],
           ),
           const SizedBox(height: 12),
-
-          // Checkout (top)
           SizedBox(
             height: 48,
             child: FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: kGreen,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
               ),
               onPressed: onCheckout,
-              child: const Text('Checkout'),
+              child: Text(loc.checkout),
             ),
           ),
           const SizedBox(height: 10),
-
-          // Cancel (under) - white with deep blue border and bold text
           SizedBox(
             height: 48,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: kDeepBlue, width: 2.2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
                 backgroundColor: Colors.white,
                 foregroundColor: kDeepBlue,
                 textStyle: const TextStyle(
@@ -312,7 +297,7 @@ class _SummaryPanel extends StatelessWidget {
                 ),
               ),
               onPressed: onCancel,
-              child: const Text('Cancel'),
+              child: Text(loc.cancel),
             ),
           ),
         ],
@@ -321,9 +306,9 @@ class _SummaryPanel extends StatelessWidget {
   }
 }
 
-/* ---------- Empty Cart ---------- */
 class _EmptyCart extends StatelessWidget {
-  const _EmptyCart();
+  final AppLocalizations loc;
+  const _EmptyCart({required this.loc});
 
   @override
   Widget build(BuildContext context) {
@@ -336,19 +321,17 @@ class _EmptyCart extends StatelessWidget {
             Icon(Icons.shopping_basket_outlined,
                 size: 64, color: Colors.black.withValues(alpha: 0.35)),
             const SizedBox(height: 12),
-            const Text(
-              'Your basket is empty',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            Text(
+              loc.emptyBasket,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
             const SizedBox(height: 4),
-            const Text('Browse the menu and add some items.',
-                style: TextStyle(color: Colors.black54)),
+            Text(loc.emptyBasketDesc, style: const TextStyle(color: Colors.black54)),
             const SizedBox(height: 18),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: kDeepBlue),
-              onPressed: () =>
-                  Navigator.pushReplacementNamed(context, '/menu'),
-              child: const Text('Browse menu'),
+              onPressed: () => Navigator.pushReplacementNamed(context, '/menu'),
+              child: Text(loc.browseMenu),
             )
           ],
         ),
@@ -357,7 +340,6 @@ class _EmptyCart extends StatelessWidget {
   }
 }
 
-/* ---------- Bottom bar with badge ---------- */
 class _AppBottomBar extends StatelessWidget {
   final int activeIndex;
   const _AppBottomBar({required this.activeIndex});
@@ -404,8 +386,7 @@ class _AppBottomBar extends StatelessWidget {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints:
-                    const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                     child: Text(
                       '$cartCount',
                       textAlign: TextAlign.center,

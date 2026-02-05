@@ -1,6 +1,6 @@
 // lib/signup_screen.dart
 import 'package:flutter/material.dart';
-
+import 'app_localizations.dart';
 
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
@@ -51,19 +51,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
 
-
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
     setState(() => _loading = false);
-
 
     Navigator.pushReplacementNamed(context, '/login/customer');
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: _aqua,
       body: SafeArea(
@@ -82,46 +82,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Create your account',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _deepBlue)),
+                      Text(
+                        t.createAccountTitle,
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: _deepBlue),
+                      ),
                       const SizedBox(height: 12),
-                      const Icon(Icons.account_circle_outlined, size: 96, color: _deepBlue),
+                      const Icon(Icons.account_circle_outlined,
+                          size: 96, color: _deepBlue),
                       const SizedBox(height: 12),
 
-                      // First / Last name
                       LayoutBuilder(
                         builder: (context, c) {
                           final twoCols = c.maxWidth >= 360;
-                          if (twoCols) {
-                            return Row(
-                              children: [
-                                Expanded(child: TextFormField(
+                          return twoCols
+                              ? Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
                                   controller: _first,
-                                  decoration: _authInput('First Name'),
-                                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                                )),
-                                const SizedBox(width: 10),
-                                Expanded(child: TextFormField(
+                                  decoration: _authInput(t.firstName),
+                                  validator: (v) =>
+                                  (v == null || v.trim().isEmpty)
+                                      ? t.required
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextFormField(
                                   controller: _last,
-                                  decoration: _authInput('Last Name'),
-                                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                                )),
-                              ],
-                            );
-                          }
-                          // Small screens: stack vertically
-                          return Column(
+                                  decoration: _authInput(t.lastName),
+                                  validator: (v) =>
+                                  (v == null || v.trim().isEmpty)
+                                      ? t.required
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          )
+                              : Column(
                             children: [
                               TextFormField(
                                 controller: _first,
-                                decoration: _authInput('First Name'),
-                                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                                decoration: _authInput(t.firstName),
+                                validator: (v) =>
+                                (v == null || v.trim().isEmpty)
+                                    ? t.required
+                                    : null,
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
                                 controller: _last,
-                                decoration: _authInput('Last Name'),
-                                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                                decoration: _authInput(t.lastName),
+                                validator: (v) =>
+                                (v == null || v.trim().isEmpty)
+                                    ? t.required
+                                    : null,
                               ),
                             ],
                           );
@@ -131,37 +150,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _email,
-                        decoration: _authInput('Email'),
+                        decoration: _authInput(t.email),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'Required';
-                          if (!v.contains('@')) return 'Enter a valid email';
+                          if (v == null || v.trim().isEmpty) return t.required;
+                          if (!v.contains('@')) return t.enterValidEmail;
                           return null;
                         },
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _pw,
-                        decoration: _authInput('Password'),
+                        decoration: _authInput(t.password),
                         obscureText: true,
                         validator: (v) =>
-                        (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                        (v == null || v.length < 6)
+                            ? t.min6Characters
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _pw2,
-                        decoration: _authInput('Re-enter password'),
+                        decoration: _authInput(t.reenterPassword),
                         obscureText: true,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Confirm your password';
-                          if (v != _pw.text) return 'Passwords do not match';
+                          if (v == null || v.isEmpty) return t.confirmPassword;
+                          if (v != _pw.text) return t.passwordsDoNotMatch;
                           return null;
                         },
                       ),
 
                       const SizedBox(height: 16),
 
-                      // Buttons row: Sign Up + Cancel
                       Row(
                         children: [
                           Expanded(
@@ -169,16 +189,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: _loading ? null : _submit,
                               child: _loading
                                   ? const SizedBox(
-                                  height: 18, width: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                  : const Text('Sign Up'),
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white))
+                                  : Text(t.register),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton(
                               onPressed: _loading ? null : () => Navigator.pop(context),
-                              child: const Text('CANCEL'),
+                              child: Text(t.cancel.toUpperCase()),
                             ),
                           ),
                         ],
@@ -186,14 +209,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       const SizedBox(height: 10),
 
-                      // Footer: Already have an account? Sign in
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account?', style: theme.textTheme.bodyMedium?.copyWith(color: _deepBlue)),
+                          Text(
+                            t.alreadyHaveAccount,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: _deepBlue),
+                          ),
                           TextButton(
-                            onPressed: _loading ? null : () => Navigator.pushReplacementNamed(context, '/login/customer'),
-                            child: const Text('Sign in'),
+                            onPressed: _loading
+                                ? null
+                                : () => Navigator.pushReplacementNamed(
+                                context, '/login/customer'),
+                            child: Text(t.login),
                           ),
                         ],
                       ),

@@ -1,15 +1,13 @@
-// lib/homepage.dart
+// lib/homepage_updated.dart
 import 'package:flutter/material.dart';
-import 'app_bottom_bar.dart'; // <-- added
+import 'app_localizations.dart';
+import 'app_bottom_bar.dart';
 
-
-// Local colors
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -19,9 +17,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: kAqua,
-
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -30,34 +29,33 @@ class _HomePageState extends State<HomePage> {
               decoration: const BoxDecoration(color: kDeepBlue),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children:  [
                   SizedBox(height: 8),
                   Text(
                     'SeaFeast',
                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 6),
-                  Text('Welcome Peter Parker!', style: TextStyle(color: Colors.white70)),
+
+                  Text('${loc.welcome} Peter Parker!', style: TextStyle(color: Colors.white70)),
                 ],
               ),
             ),
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Log out'),
+              title: Text(loc.logout),
               onTap: () => Navigator.pushReplacementNamed(context, '/'),
             ),
           ],
         ),
       ),
-
       appBar: AppBar(
         backgroundColor: kAqua,
         elevation: 0,
         centerTitle: true,
-        title: const Text('Home'),
+        title: Text(loc.home),
       ),
-
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -65,22 +63,22 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 _PillActionButton(
                   icon: Icons.restaurant_menu,
-                  label: 'Browse menu',
+                  label: loc.browseMenu,
                   routeName: '/menu',
                 ),
-                SizedBox(height: 22),
+                const SizedBox(height: 22),
                 _PillActionButton(
                   icon: Icons.event_seat,
-                  label: 'Reserve Table',
+                  label: loc.reserveTable,
                   routeName: '/reserve',
                 ),
-                SizedBox(height: 22),
+                const SizedBox(height: 22),
                 _PillActionButton(
                   icon: Icons.person_outline,
-                  label: 'View Profile',
+                  label: loc.viewProfileBtn,
                   routeName: '/profile',
                 ),
               ],
@@ -88,21 +86,16 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-
-      // ---------- CHANGED: use AppBottomBar ----------
-      bottomNavigationBar: AppBottomBar(
-        activeIndex: 0
-      ),
-      // ----------------------------------------------
+      bottomNavigationBar: AppBottomBar(activeIndex: 0),
     );
   }
 }
 
-/* Reusable pill-styled button */
 class _PillActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final String routeName;
+
   const _PillActionButton({
     required this.icon,
     required this.label,

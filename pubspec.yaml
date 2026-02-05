@@ -9,8 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Add this line below:
+  flutter_localizations:
+    sdk: flutter
+
   cupertino_icons: ^1.0.8
-  provider: ^6.1.2   # 👈 Add this line
+  provider: ^6.1.2
   image_picker: ^1.1.2
 
 dev_dependencies:
@@ -21,4 +26,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-        - lib/images/
+    - lib/images/

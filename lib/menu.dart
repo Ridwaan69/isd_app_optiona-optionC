@@ -1,16 +1,18 @@
+// lib/menu_updated.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
+import 'app_localizations.dart';
 import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
-/* ---------- Data models for the menu UI ---------- */
+/* ---------- Data models ---------- */
 
 class ChoiceGroup {
   final String title;
-  final bool singleSelect; // false => checkboxes, true => radios
+  final bool singleSelect;
   final List<String> options;
 
   const ChoiceGroup({
@@ -441,10 +443,9 @@ final _sections = <MenuSectionData>[
   ]),
 ];
 
-
 double _adaptiveCardHeight(BuildContext context) {
   final h = MediaQuery.of(context).size.height;
-  final proposed = h * 0.95; // more space on tiny phones
+  final proposed = h * 0.95;
   const minH = 600.0;
   const maxH = 780.0;
   return proposed.clamp(minH, maxH);
@@ -453,13 +454,15 @@ double _adaptiveCardHeight(BuildContext context) {
 MenuSectionData _byTitle(String title) =>
     _sections.firstWhere((s) => s.title == title);
 
-/* ---------- Menu Screen with 4 tabs ---------- */
+/* ---------- Menu Screen ---------- */
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -467,12 +470,9 @@ class MenuScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: kAqua,
           centerTitle: true,
-          title: const Text('SEAFEAST Menu'),
-
+          title: Text('SEAFEAST ${loc.menu}'),
         ),
-
-        bottomNavigationBar:  AppBottomBar(activeIndex: 0),
-
+        bottomNavigationBar: AppBottomBar(activeIndex: 0),
         body: Column(
           children: [
             Material(
@@ -480,23 +480,20 @@ class MenuScreen extends StatelessWidget {
               child: TabBar(
                 isScrollable: false,
                 labelPadding: EdgeInsets.zero,
-                labelStyle:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                unselectedLabelStyle:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 labelColor: kDeepBlue,
                 unselectedLabelColor: const Color(0xFF2B5B66),
                 indicatorColor: kDeepBlue,
                 indicatorWeight: 3,
-                tabs: const [
-                  Tab(text: 'Starters'),
-                  Tab(text: 'Main Courses'),
-                  Tab(text: 'Drinks'),
-                  Tab(text: 'Desserts'),
+                tabs: [
+                  Tab(text: loc.starters),
+                  Tab(text: loc.mainCourses),
+                  Tab(text: loc.drinks),
+                  Tab(text: loc.desserts),
                 ],
               ),
             ),
-
             const Expanded(
               child: TabBarView(
                 children: [
@@ -514,7 +511,7 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-/* ---------- One section per tab ---------- */
+/* ---------- Section View ---------- */
 
 class _SectionView extends StatelessWidget {
   final String sectionTitle;
@@ -542,7 +539,6 @@ class _SectionView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-
         LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
@@ -577,76 +573,7 @@ class _SectionView extends StatelessWidget {
   }
 }
 
-
-class _AppBottomBar extends StatelessWidget {
-  final int activeIndex; // 0: home, 1: profile, 2: cart
-  const _AppBottomBar({required this.activeIndex});
-
-  void _go(BuildContext context, int i) {
-    if (i == activeIndex) return;
-    switch (i) {
-      case 0:
-        Navigator.pushReplacementNamed(context, '/home'); // Home
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, '/profile');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/cart');
-        break;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cartCount = context.watch<CartProvider>().totalItems;
-
-    return BottomNavigationBar(
-      currentIndex: activeIndex,
-      onTap: (i) => _go(context, i),
-      backgroundColor: kAqua,
-      selectedItemColor: kDeepBlue,
-      unselectedItemColor: kDeepBlue.withOpacity(0.6),
-      items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
-        BottomNavigationBarItem(
-          label: '',
-          icon: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const Icon(Icons.shopping_basket_rounded),
-              if (cartCount > 0)
-                Positioned(
-                  right: -6,
-                  top: -3,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    child: Text(
-                      '$cartCount',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/* ---------- Menu card ---------- */
+/* ---------- Menu Card ---------- */
 
 class _MenuCard extends StatefulWidget {
   final MenuCardData data;
@@ -675,7 +602,9 @@ class _MenuCardState extends State<_MenuCard> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final d = widget.data;
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -706,7 +635,8 @@ class _MenuCardState extends State<_MenuCard> {
             const SizedBox(height: 6),
             Text(d.description, style: const TextStyle(color: Colors.black87, fontSize: 13.5)),
             const SizedBox(height: 6),
-            Text('Allergens: ${d.allergens}', style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5)),
+            Text('${loc.allergens}: ${d.allergens}',
+                style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5)),
             const SizedBox(height: 8),
 
             for (final g in d.choices) ...[
@@ -741,7 +671,7 @@ class _MenuCardState extends State<_MenuCard> {
 
             Row(
               children: [
-                const Text('Quantity:', style: TextStyle(fontWeight: FontWeight.w600)),
+                Text(loc.quantity, style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline),
@@ -768,7 +698,7 @@ class _MenuCardState extends State<_MenuCard> {
                     for (final e in single.entries) '${e.key}: ${e.value}',
                   ];
 
-                  final addedQty = qty; // capture before reset
+                  final addedQty = qty;
 
                   context.read<CartProvider>().add(
                     MenuItem(
@@ -783,17 +713,17 @@ class _MenuCardState extends State<_MenuCard> {
                     selected: selected,
                   );
 
-                  setState(() => qty = 1); // reset after adding
+                  setState(() => qty = 1);
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${d.name} ×$addedQty added to cart')),
+                      SnackBar(content: Text('${d.name} ×$addedQty ${loc.itemAddedToCart}')),
                   );
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: kDeepBlue,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                child: const Text('Add to Cart'),
+                child: Text(loc.addToCart),
               ),
             ),
           ],

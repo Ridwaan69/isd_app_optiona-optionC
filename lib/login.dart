@@ -42,6 +42,7 @@ class AuthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
@@ -63,7 +64,7 @@ class AuthCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 FilledButton(onPressed: onPrimary, child: Text(primaryText)),
                 const SizedBox(height: 8),
-                OutlinedButton(onPressed: onBack, child: const Text('BACK')),
+                OutlinedButton(onPressed: onBack, child: Text(loc.backBtn)),
                 if (footer != null) ...[
                   const SizedBox(height: 10),
                   footer!,
@@ -98,7 +99,36 @@ class LandingScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Language Dropdown at Top
+                  const SizedBox(height: 20),
+
+                  Container(
+                    width: 110,
+                    height: 110,
+                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                    alignment: Alignment.center,
+                    child: const Text('Sea\nFeast',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: _deepBlue, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1)),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    _getWelcomeText(languageProvider.currentLocale.languageCode),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _deepBlue),
+                  ),
+                  const SizedBox(height: 28),
+                  FilledButton(
+                    onPressed: () => Navigator.pushNamed(context, '/login/customer'),
+                    child: Text(_getCustomerText(languageProvider.currentLocale.languageCode)),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () => Navigator.pushNamed(context, '/login/admin'),
+                    child: Text(_getAdminText(languageProvider.currentLocale.languageCode)),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Language Dropdown moved here
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -157,33 +187,6 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                    alignment: Alignment.center,
-                    child: const Text('Sea\nFeast',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: _deepBlue, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1)),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    _getWelcomeText(languageProvider.currentLocale.languageCode),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: _deepBlue),
-                  ),
-                  const SizedBox(height: 28),
-                  FilledButton(
-                    onPressed: () => Navigator.pushNamed(context, '/login/customer'),
-                    child: Text(_getCustomerText(languageProvider.currentLocale.languageCode)),
-                  ),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => Navigator.pushNamed(context, '/login/admin'),
-                    child: Text(_getAdminText(languageProvider.currentLocale.languageCode)),
-                  ),
                 ],
               ),
             ),
@@ -220,6 +223,7 @@ class LandingScreen extends StatelessWidget {
   }
 }
 
+
 /// Customer: Email + Password
 class CustomerLoginScreen extends StatefulWidget {
   const CustomerLoginScreen({super.key});
@@ -255,10 +259,10 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
           footer: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("Don't have an account? "),
+              Text(loc.dontHaveAccount),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/signup'),
-                child: const Text('Sign up'),
+                child: Text(loc.signUpSmall),
               ),
             ],
           ),
@@ -270,14 +274,14 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                   decoration: _authInput(loc.email),
                   keyboardType: TextInputType.emailAddress,
                   onChanged: (v) => email = v.trim(),
-                  validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                  validator: (v) => (v == null || !v.contains('@')) ? loc.enterValidEmail : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   decoration: _authInput(loc.password),
                   obscureText: true,
                   onChanged: (v) => pw = v,
-                  validator: (v) => (v == null || v.length < 4) ? 'Min 4 characters' : null,
+                  validator: (v) => (v == null || v.length < 4) ? loc.min4Characters : null,
                 ),
               ],
             ),
@@ -319,7 +323,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           title: loc.adminLogin,
           onBack: () => Navigator.pop(context),
           onPrimary: loading ? (){} : _submit,
-          primaryText: loading ? 'Signing in...' : loc.login,
+          primaryText: loading ? loc.signingIn : loc.login,
           form: Form(
             key: _form,
             child: Column(
@@ -327,14 +331,14 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 TextFormField(
                   decoration: _authInput(loc.staffId),
                   onChanged: (v) => staffId = v.trim(),
-                  validator: (v) => (v == null || v.isEmpty) ? 'Enter Staff ID' : null,
+                  validator: (v) => (v == null || v.isEmpty) ? loc.enterStaffId : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   decoration: _authInput(loc.password),
                   obscureText: true,
                   onChanged: (v) => pw = v,
-                  validator: (v) => (v == null || v.length < 4) ? 'Min 4 characters' : null,
+                  validator: (v) => (v == null || v.length < 4) ? loc.min4Characters : null,
                 ),
               ],
             ),

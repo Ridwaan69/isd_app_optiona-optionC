@@ -29,14 +29,15 @@ class _HomePageState extends State<HomePage> {
               decoration: const BoxDecoration(color: kDeepBlue),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children:  [
                   SizedBox(height: 8),
                   Text(
                     'SeaFeast',
                     style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(height: 6),
-                  Text('Welcome Peter Parker!', style: TextStyle(color: Colors.white70)),
+
+                  Text('${loc.welcome} Peter Parker!', style: TextStyle(color: Colors.white70)),
                 ],
               ),
             ),

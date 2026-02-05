@@ -28,6 +28,19 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   Uint8List? _photoBytes;
   final _picker = ImagePicker();
 
+  String _flagFor(String code) {
+    switch (code) {
+      case 'fr':
+        return '🇫🇷';
+      case 'en':
+        return '🇬🇧';
+      case 'es':
+        return '🇪🇸';
+      default:
+        return '🌐';
+    }
+  }
+
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -293,7 +306,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.language, color: kDeepBlue, size: 20),
+                          Text(
+                            _flagFor(langProvider.currentLocale.languageCode),
+                            style: const TextStyle(fontSize: 20),
+                          ),
                           const SizedBox(width: 12),
                           Text(
                             langProvider.currentLanguageName,
@@ -394,14 +410,27 @@ class _LanguageOption extends StatelessWidget {
     required this.onTap,
   });
 
+  String get _flag {
+    switch (languageCode) {
+      case 'fr':
+        return '🇫🇷';
+      case 'en':
+        return '🇬🇧';
+      case 'es':
+        return '🇪🇸';
+      default:
+        return '🌐';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isSelected = languageCode == currentCode;
 
     return ListTile(
-      leading: Icon(
-        Icons.language,
-        color: isSelected ? kDeepBlue : Colors.grey,
+      leading: Text(
+        _flag,
+        style: const TextStyle(fontSize: 20),
       ),
       title: Text(
         languageName,

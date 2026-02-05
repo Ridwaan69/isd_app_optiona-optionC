@@ -27,6 +27,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Future<void> _submitFeedback() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
+
     // Show loading indicator
     showDialog(
       context: context,
@@ -44,16 +46,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     await showDialog(
       context: context,
       builder: (_) {
-        final loc = AppLocalizations.of(context);
+        final dialogLoc = AppLocalizations.of(context);
         return AlertDialog(
           icon: const Icon(Icons.check_circle, size: 48, color: Colors.green),
-          title: Text(loc.feedbackSubmitted),
-          content: const Text('We appreciate your feedback and will use it to improve our service.'),
+          title: Text(dialogLoc.feedbackSubmitted),
+          content: Text(dialogLoc.feedbackAppreciation),
           actions: [
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: kDeepBlue),
               onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+              child: Text(dialogLoc.ok),
             ),
           ],
         );
@@ -106,9 +108,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'Help us improve your dining experience',
-                      style: TextStyle(color: Colors.black54),
+                    Text(
+                      loc.helpUsImprove,
+                      style: const TextStyle(color: Colors.black54),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -176,7 +178,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     // Rating Text
                     Center(
                       child: Text(
-                        _getRatingText(_rating.toInt()),
+                        _getRatingText(_rating.toInt(), loc),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -232,10 +234,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ),
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) {
-                          return 'Please share your feedback';
+                          return loc.pleaseShareFeedback;
                         }
                         if (v.trim().length < 10) {
-                          return 'Please provide more detailed feedback (min 10 characters)';
+                          return loc.provideDetailedFeedback;
                         }
                         return null;
                       },
@@ -273,18 +275,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     );
   }
 
-  String _getRatingText(int rating) {
+  String _getRatingText(int rating, AppLocalizations loc) {
     switch (rating) {
       case 1:
-        return 'Poor';
+        return loc.ratingPoor;
       case 2:
-        return 'Fair';
+        return loc.ratingFair;
       case 3:
-        return 'Good';
+        return loc.ratingGood;
       case 4:
-        return 'Very Good';
+        return loc.ratingVeryGood;
       case 5:
-        return 'Excellent';
+        return loc.ratingExcellent;
       default:
         return '';
     }

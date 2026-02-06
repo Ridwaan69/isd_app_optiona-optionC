@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'app_localizations.dart';
 
+// SUPABASE ADDITION for option A
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
 
@@ -37,6 +40,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _pw2 = TextEditingController();
   bool _loading = false;
 
+  // SUPABASE ADDITION (SAFE TO KEEP)
+  final _supabase = Supabase.instance.client;
+
   @override
   void dispose() {
     _first.dispose();
@@ -51,12 +57,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      // =========================================================
+      // SUPABASE ADDITION (CORE LOGIC)
+      // This creates the user in Supabase Auth
+      // =========================================================
+      final authResponse = await _supabase.auth.signUp(
+        email: _email.text.trim(),
+        password: _pw.text,
+      );
 
-    if (!mounted) return;
-    setState(() => _loading = false);
+      final user = authResponse.user;
 
-    Navigator.pushReplacementNamed(context, '/login/customer');
+      if (user == null) {
+        throw Exception('User creation failed');
+      }
+
+      // =========================================================
+      // SUPABASE ADDITION (OPTIONAL BUT RECOMMENDED)
+      // Store extra profile data in user_profiles table
+      // =========================================================
+      await _supabase.from('user_profiles').insert({
+        'id': user.id, // must match auth.users.id
+        'first_name': _first.text.trim(),
+        'last_name': _last.text.trim(),
+        'role': 'customer', //default role == customer
+      });
+
+      // =========================================================
+      // EXISTING FLOW (UNCHANGED)
+      // =========================================================
+      if (!mounted) return;
+      setState(() => _loading = false);
+
+      Navigator.pushReplacementNamed(context, '/login/customer');
+    } catch (e) {
+      // =========================================================
+      // SUPABASE ERROR HANDLING (MINIMAL, NON-BREAKING)
+      // =========================================================
+      if (!mounted) return;
+      setState(() => _loading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -73,7 +118,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Card(
               color: _aqua,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(22, 26, 22, 18),
@@ -85,13 +132,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         t.createAccountTitle,
                         style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: _deepBlue),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: _deepBlue,
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      const Icon(Icons.account_circle_outlined,
-                          size: 96, color: _deepBlue),
+                      const Icon(
+                        Icons.account_circle_outlined,
+                        size: 96,
+                        color: _deepBlue,
+                      ),
                       const SizedBox(height: 12),
 
                       LayoutBuilder(
@@ -99,51 +150,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           final twoCols = c.maxWidth >= 360;
                           return twoCols
                               ? Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _first,
-                                  decoration: _authInput(t.firstName),
-                                  validator: (v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? t.required
-                                      : null,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _last,
-                                  decoration: _authInput(t.lastName),
-                                  validator: (v) =>
-                                  (v == null || v.trim().isEmpty)
-                                      ? t.required
-                                      : null,
-                                ),
-                              ),
-                            ],
-                          )
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _first,
+                                        decoration: _authInput(t.firstName),
+                                        validator: (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                            ? t.required
+                                            : null,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _last,
+                                        decoration: _authInput(t.lastName),
+                                        validator: (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                            ? t.required
+                                            : null,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               : Column(
-                            children: [
-                              TextFormField(
-                                controller: _first,
-                                decoration: _authInput(t.firstName),
-                                validator: (v) =>
-                                (v == null || v.trim().isEmpty)
-                                    ? t.required
-                                    : null,
-                              ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                controller: _last,
-                                decoration: _authInput(t.lastName),
-                                validator: (v) =>
-                                (v == null || v.trim().isEmpty)
-                                    ? t.required
-                                    : null,
-                              ),
-                            ],
-                          );
+                                  children: [
+                                    TextFormField(
+                                      controller: _first,
+                                      decoration: _authInput(t.firstName),
+                                      validator: (v) =>
+                                          (v == null || v.trim().isEmpty)
+                                          ? t.required
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    TextFormField(
+                                      controller: _last,
+                                      decoration: _authInput(t.lastName),
+                                      validator: (v) =>
+                                          (v == null || v.trim().isEmpty)
+                                          ? t.required
+                                          : null,
+                                    ),
+                                  ],
+                                );
                         },
                       ),
 
@@ -163,8 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         controller: _pw,
                         decoration: _authInput(t.password),
                         obscureText: true,
-                        validator: (v) =>
-                        (v == null || v.length < 6)
+                        validator: (v) => (v == null || v.length < 6)
                             ? t.min6Characters
                             : null,
                       ),
@@ -189,18 +239,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: _loading ? null : _submit,
                               child: _loading
                                   ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white))
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
                                   : Text(t.register),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: _loading ? null : () => Navigator.pop(context),
+                              onPressed: _loading
+                                  ? null
+                                  : () => Navigator.pop(context),
                               child: Text(t.cancel.toUpperCase()),
                             ),
                           ),
@@ -214,14 +268,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           Text(
                             t.alreadyHaveAccount,
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(color: _deepBlue),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: _deepBlue,
+                            ),
                           ),
                           TextButton(
                             onPressed: _loading
                                 ? null
                                 : () => Navigator.pushReplacementNamed(
-                                context, '/login/customer'),
+                                    context,
+                                    '/login/customer',
+                                  ),
                             child: Text(t.login),
                           ),
                         ],

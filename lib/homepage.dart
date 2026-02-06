@@ -1,5 +1,6 @@
 // lib/homepage_updated.dart
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // SUPABASE ADDITION
 import 'app_localizations.dart';
 import 'app_bottom_bar.dart';
 
@@ -13,7 +14,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _tab = 0;
+  final int _tab = 0;
+
+  // ===================== USER INFO =====================
+  String firstName = '';
+  String lastName = '';
+  String role = '';
+  final _supabase = Supabase.instance.client; // SUPABASE CLIENT
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName(); // FETCH FIRST & LAST NAME & role
+  }
+
+  Future<void> _fetchUserName() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) return;
+
+      final profile = await _supabase
+          .from('user_profiles')
+          .select('first_name, last_name, role')
+          .eq('id', user.id)
+          .single();
+
+      setState(() {
+        firstName = profile['first_name'] ?? '';
+        lastName = profile['last_name'] ?? '';
+        role = profile['role'] ?? '';
+      });
+    } catch (e) {
+      debugPrint('Error fetching user profile: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +63,41 @@ class _HomePageState extends State<HomePage> {
               decoration: const BoxDecoration(color: kDeepBlue),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children:  [
+                children: [
                   SizedBox(height: 8),
                   Text(
                     'SeaFeast',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   SizedBox(height: 6),
 
-                  Text('${loc.welcome} Peter Parker!', style: TextStyle(color: Colors.white70)),
+                  // ===================== USER NAME DISPLAY =====================
+                  Text(
+                    '${loc.welcome} $firstName $lastName!',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                 ],
               ),
             ),
             const Divider(height: 1),
+
+            // ===================== MANAGE ORDERS =====================
+            ListTile(
+              leading: const Icon(Icons.list_alt),
+              title: Text(loc.manageOrders),
+              onTap: () {
+                if (role.toLowerCase() == 'admin') {
+                  Navigator.pushNamed(context, '/admin_orders');
+                } else {
+                  Navigator.pushNamed(context, '/orders');
+                }
+              },
+            ),
+
             ListTile(
               leading: const Icon(Icons.logout),
               title: Text(loc.logout),

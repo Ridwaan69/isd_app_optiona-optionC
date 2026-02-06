@@ -1,5 +1,4 @@
 // lib/profile_settings_updated.dart
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -121,7 +120,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     if (selected != null) {
       _dobCtrl.text =
-      '${selected.day.toString().padLeft(2, '0')}/${selected.month.toString().padLeft(2, '0')}/${selected.year.toString().padLeft(4, '0')}';
+          '${selected.day.toString().padLeft(2, '0')}/${selected.month.toString().padLeft(2, '0')}/${selected.year.toString().padLeft(4, '0')}';
       setState(() {});
     }
   }
@@ -182,9 +181,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final loc = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(loc.profileSaved)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(loc.profileSaved)));
   }
 
   @override
@@ -213,14 +212,18 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     backgroundColor: Colors.white,
                     child: _photoBytes == null
                         ? const CircleAvatar(
-                      radius: 52,
-                      backgroundColor: Color(0xFFB9D6F0),
-                      child: Icon(Icons.person, size: 56, color: kDeepBlue),
-                    )
+                            radius: 52,
+                            backgroundColor: Color(0xFFB9D6F0),
+                            child: Icon(
+                              Icons.person,
+                              size: 56,
+                              color: kDeepBlue,
+                            ),
+                          )
                         : CircleAvatar(
-                      radius: 52,
-                      backgroundImage: MemoryImage(_photoBytes!),
-                    ),
+                            radius: 52,
+                            backgroundImage: MemoryImage(_photoBytes!),
+                          ),
                   ),
                   Positioned(
                     right: 0,
@@ -263,13 +266,18 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   TextFormField(
                     controller: _emailCtrl,
                     decoration: _inputStyle(
-                      suffixIcon: const Icon(Icons.check_box_outline_blank, size: 18),
+                      suffixIcon: const Icon(
+                        Icons.check_box_outline_blank,
+                        size: 18,
+                      ),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) {
                       final val = v?.trim() ?? '';
                       if (val.isEmpty) return 'Please enter your email';
-                      final ok = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(val);
+                      final ok = RegExp(
+                        r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                      ).hasMatch(val);
                       return ok ? null : 'Invalid email';
                     },
                   ),
@@ -296,7 +304,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   InkWell(
                     onTap: _showLanguageDialog,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(8),
@@ -428,10 +439,7 @@ class _LanguageOption extends StatelessWidget {
     final isSelected = languageCode == currentCode;
 
     return ListTile(
-      leading: Text(
-        _flag,
-        style: const TextStyle(fontSize: 20),
-      ),
+      leading: Text(_flag, style: const TextStyle(fontSize: 20)),
       title: Text(
         languageName,
         style: TextStyle(

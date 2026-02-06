@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'cart_provider.dart';
 import 'app_localizations.dart';
-import '/app_bottom_bar.dart';
 
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
@@ -45,7 +44,8 @@ class _CartBody extends StatelessWidget {
     if (lines.isEmpty) return _EmptyCart(loc: loc);
 
     final sub = cart.subtotal;
-    final total = (sub + _deliveryCharge - _discount).clamp(0, double.infinity) as double;
+    final total =
+        (sub + _deliveryCharge - _discount).clamp(0, double.infinity) as double;
 
     return Column(
       children: [
@@ -70,7 +70,8 @@ class _CartBody extends StatelessWidget {
                     context.read<CartProvider>().updateQty(i, q);
                   }
                 },
-                onPlus: () => context.read<CartProvider>().updateQty(i, l.qty + 1),
+                onPlus: () =>
+                    context.read<CartProvider>().updateQty(i, l.qty + 1),
               );
             },
           ),
@@ -133,10 +134,11 @@ class _ItemCard extends StatelessWidget {
               child: isHttp
                   ? Image.network(imageUrl, fit: BoxFit.cover)
                   : Image.asset(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_outlined),
-              ),
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.image_not_supported_outlined),
+                    ),
             ),
           ),
           const SizedBox(width: 12),
@@ -144,10 +146,15 @@ class _ItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   '$_currency${price.toStringAsFixed(2)}',
@@ -170,7 +177,11 @@ class _ItemCard extends StatelessWidget {
 class _QtyPill extends StatelessWidget {
   final int qty;
   final VoidCallback onMinus, onPlus;
-  const _QtyPill({required this.qty, required this.onMinus, required this.onPlus});
+  const _QtyPill({
+    required this.qty,
+    required this.onMinus,
+    required this.onPlus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +198,10 @@ class _QtyPill extends StatelessWidget {
           _roundBtn(icon: Icons.remove, onTap: onMinus),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text('$qty', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            child: Text(
+              '$qty',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
           ),
           _roundBtn(icon: Icons.add, onTap: onPlus),
         ],
@@ -237,7 +251,10 @@ class _SummaryPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(loc.subtotal, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                loc.subtotal,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               Text('$_currency${subtotal.toStringAsFixed(2)}'),
             ],
@@ -245,7 +262,10 @@ class _SummaryPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              Text(loc.deliveryCharge, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                loc.deliveryCharge,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               Text('$_currency${delivery.toStringAsFixed(2)}'),
             ],
@@ -253,7 +273,10 @@ class _SummaryPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Row(
             children: [
-              Text(loc.discount, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                loc.discount,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const Spacer(),
               Text('$_currency${discount.toStringAsFixed(2)}'),
             ],
@@ -261,11 +284,20 @@ class _SummaryPanel extends StatelessWidget {
           const Divider(height: 20, thickness: 1),
           Row(
             children: [
-              Text(loc.total, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              Text(
+                loc.total,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
               const Spacer(),
               Text(
                 '$_currency${total.toStringAsFixed(2)}',
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
@@ -275,7 +307,9 @@ class _SummaryPanel extends StatelessWidget {
             child: FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: kGreen,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
               ),
               onPressed: onCheckout,
               child: Text(loc.checkout),
@@ -287,7 +321,9 @@ class _SummaryPanel extends StatelessWidget {
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: kDeepBlue, width: 2.2),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
                 backgroundColor: Colors.white,
                 foregroundColor: kDeepBlue,
                 textStyle: const TextStyle(
@@ -318,21 +354,27 @@ class _EmptyCart extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.shopping_basket_outlined,
-                size: 64, color: Colors.black.withValues(alpha: 0.35)),
+            Icon(
+              Icons.shopping_basket_outlined,
+              size: 64,
+              color: Colors.black.withValues(alpha: 0.35),
+            ),
             const SizedBox(height: 12),
             Text(
               loc.emptyBasket,
               style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
             const SizedBox(height: 4),
-            Text(loc.emptyBasketDesc, style: const TextStyle(color: Colors.black54)),
+            Text(
+              loc.emptyBasketDesc,
+              style: const TextStyle(color: Colors.black54),
+            ),
             const SizedBox(height: 18),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: kDeepBlue),
               onPressed: () => Navigator.pushReplacementNamed(context, '/menu'),
               child: Text(loc.browseMenu),
-            )
+            ),
           ],
         ),
       ),
@@ -368,8 +410,14 @@ class _AppBottomBar extends StatelessWidget {
       selectedItemColor: kDeepBlue,
       unselectedItemColor: kDeepBlue.withValues(alpha: 0.6),
       items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: ''),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home_rounded),
+          label: '',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person_rounded),
+          label: '',
+        ),
         BottomNavigationBarItem(
           label: '',
           icon: Stack(
@@ -386,7 +434,10 @@ class _AppBottomBar extends StatelessWidget {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     child: Text(
                       '$cartCount',
                       textAlign: TextAlign.center,

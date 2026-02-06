@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:seafeast_demo/admin_orders.dart';
 
 // Existing imports
 import 'login.dart';
@@ -19,7 +20,23 @@ import 'profile_settings.dart';
 import 'feedback_screen.dart';
 import 'reserve_table_screen.dart';
 
-void main() => runApp(const App());
+//import to add supabase(backend)
+//New imports for Option C features
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'orders.dart';
+import 'admin_orders.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://trgfcuxdvnuanssmmjrk.supabase.co', //supabase project url
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyZ2ZjdXhkdm51YW5zc21tanJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTc2NDYsImV4cCI6MjA4NTc3MzY0Nn0.LrjOkTaloRCfVzGiQcE7a_Txp30yOLTKK50cRJWglhw', // supabase anon key
+  );
+
+  runApp(const App());
+}
 
 const _aqua = Color(0xFFBDEDF0);
 const _deepBlue = Color(0xFF146C72);
@@ -32,7 +49,9 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => LanguageProvider()), // NEW: Language provider
+        ChangeNotifierProvider(
+          create: (_) => LanguageProvider(),
+        ), // NEW: Language provider
       ],
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, child) {
@@ -54,10 +73,9 @@ class App extends StatelessWidget {
               useMaterial3: true,
               colorSchemeSeed: _deepBlue,
               scaffoldBackgroundColor: _aqua,
-              textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: _deepBlue,
-                displayColor: _deepBlue,
-              ),
+              textTheme: Theme.of(
+                context,
+              ).textTheme.apply(bodyColor: _deepBlue, displayColor: _deepBlue),
               filledButtonTheme: FilledButtonThemeData(
                 style: FilledButton.styleFrom(
                   backgroundColor: _deepBlue,
@@ -89,8 +107,11 @@ class App extends StatelessWidget {
               '/profile': (_) => const ProfileSettingsScreen(),
 
               // NEW ROUTES (Option A features)
-              '/feedback': (_) => const FeedbackScreen(),        // FR22
-              '/reserve': (_) => const ReserveTableScreen(),     // FR23 & FR24
+              '/feedback': (_) => const FeedbackScreen(), // FR22
+              '/reserve': (_) => const ReserveTableScreen(), // FR23 & FR24
+              //New routes(Option C features)
+              '/orders': (_) => const OrdersScreen(),
+              '/admin_orders': (_) => const AdminOrdersScreen(),
             },
           );
         },

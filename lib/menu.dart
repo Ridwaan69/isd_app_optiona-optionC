@@ -5,6 +5,9 @@ import 'cart_provider.dart';
 import 'app_localizations.dart';
 import '/app_bottom_bar.dart';
 
+//import for option C
+import 'bestselling_dishes.dart';
+
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
@@ -394,7 +397,11 @@ final _sections = <MenuSectionData>[
       choices: [
         ChoiceGroup(
           title: 'Customizations',
-          options: ['Extra Berry Compote', 'Whipped Cream', 'Chocolate Drizzle'],
+          options: [
+            'Extra Berry Compote',
+            'Whipped Cream',
+            'Chocolate Drizzle',
+          ],
         ),
       ],
     ),
@@ -480,8 +487,14 @@ class MenuScreen extends StatelessWidget {
               child: TabBar(
                 isScrollable: false,
                 labelPadding: EdgeInsets.zero,
-                labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
                 labelColor: kDeepBlue,
                 unselectedLabelColor: const Color(0xFF2B5B66),
                 indicatorColor: kDeepBlue,
@@ -494,6 +507,7 @@ class MenuScreen extends StatelessWidget {
                 ],
               ),
             ),
+
             const Expanded(
               child: TabBarView(
                 children: [
@@ -524,6 +538,7 @@ class _SectionView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        BestSellingDishesSection(),
         Container(
           padding: const EdgeInsets.only(bottom: 8),
           decoration: const BoxDecoration(
@@ -546,17 +561,17 @@ class _SectionView extends StatelessWidget {
 
             final gridDelegate = cross == 1
                 ? SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              mainAxisExtent: _adaptiveCardHeight(context),
-            )
+                    crossAxisCount: 1,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: _adaptiveCardHeight(context),
+                  )
                 : SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: cross,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: (cross == 3 ? 0.70 : 0.78),
-            );
+                    crossAxisCount: cross,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: (cross == 3 ? 0.70 : 0.78),
+                  );
 
             return GridView.builder(
               shrinkWrap: true,
@@ -620,7 +635,10 @@ class _MenuCardState extends State<_MenuCard> {
                 Expanded(
                   child: Text(
                     d.name,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Text(
@@ -633,45 +651,61 @@ class _MenuCardState extends State<_MenuCard> {
               ],
             ),
             const SizedBox(height: 6),
-            Text(d.description, style: const TextStyle(color: Colors.black87, fontSize: 13.5)),
+            Text(
+              d.description,
+              style: const TextStyle(color: Colors.black87, fontSize: 13.5),
+            ),
             const SizedBox(height: 6),
-            Text('${loc.allergens}: ${d.allergens}',
-                style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5)),
+            Text(
+              '${loc.allergens}: ${d.allergens}',
+              style: const TextStyle(color: Color(0xFFE67E22), fontSize: 12.5),
+            ),
             const SizedBox(height: 8),
 
             for (final g in d.choices) ...[
-              Text(g.title, style: const TextStyle(color: kDeepBlue, fontWeight: FontWeight.w700, fontSize: 13)),
+              Text(
+                g.title,
+                style: const TextStyle(
+                  color: kDeepBlue,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+              ),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
                 children: g.singleSelect
                     ? g.options.map((o) {
-                  final selected = single[g.title] == o;
-                  return ChoiceChip(
-                    label: Text(o),
-                    selected: selected,
-                    onSelected: (_) => setState(() => single[g.title] = o),
-                  );
-                }).toList()
+                        final selected = single[g.title] == o;
+                        return ChoiceChip(
+                          label: Text(o),
+                          selected: selected,
+                          onSelected: (_) =>
+                              setState(() => single[g.title] = o),
+                        );
+                      }).toList()
                     : g.options.map((o) {
-                  final set = multi[g.title]!;
-                  final selected = set.contains(o);
-                  return FilterChip(
-                    label: Text(o),
-                    selected: selected,
-                    onSelected: (sel) => setState(() {
-                      sel ? set.add(o) : set.remove(o);
-                    }),
-                  );
-                }).toList(),
+                        final set = multi[g.title]!;
+                        final selected = set.contains(o);
+                        return FilterChip(
+                          label: Text(o),
+                          selected: selected,
+                          onSelected: (sel) => setState(() {
+                            sel ? set.add(o) : set.remove(o);
+                          }),
+                        );
+                      }).toList(),
               ),
               const SizedBox(height: 10),
             ],
 
             Row(
               children: [
-                Text(loc.quantity, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(
+                  loc.quantity,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline),
@@ -716,7 +750,11 @@ class _MenuCardState extends State<_MenuCard> {
                   setState(() => qty = 1);
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${d.name} ×$addedQty ${loc.itemAddedToCart}')),
+                    SnackBar(
+                      content: Text(
+                        '${d.name} ×$addedQty ${loc.itemAddedToCart}',
+                      ),
+                    ),
                   );
                 },
                 style: FilledButton.styleFrom(
@@ -752,18 +790,18 @@ class _MenuImage extends StatelessWidget {
       child: Center(
         child: isHttp
             ? Image.network(
-          pathOrUrl,
-          fit: BoxFit.contain,
-          width: double.infinity,
-          height: double.infinity,
-        )
+                pathOrUrl,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
+              )
             : Image.asset(
-          pathOrUrl,
-          fit: BoxFit.contain,
-          width: double.infinity,
-          height: double.infinity,
-          errorBuilder: (_, __, ___) => const Text('Image not found'),
-        ),
+                pathOrUrl,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (_, __, ___) => const Text('Image not found'),
+              ),
       ),
     );
   }

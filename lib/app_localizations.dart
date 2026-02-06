@@ -10,7 +10,8 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   static const List<Locale> supportedLocales = [
     Locale('en', ''), // English
@@ -26,6 +27,11 @@ class AppLocalizations {
       'menu': 'Menu',
       'cart': 'Basket',
       'checkout': 'Checkout',
+
+      // ===================== CUSTOM STRINGS =====================
+      //SAFE TO KEEP DURING MERGING (for Option C)
+      'orders': 'Orders', // Added for side drawer
+      "bestSellingDishes": "Best Selling Dishes",
 
       // Auth
       'sign_in': 'Sign in to your account',
@@ -95,7 +101,8 @@ class AppLocalizations {
       'order_placed': 'Your order has been placed!',
       'confirm_order_btn': 'Confirm Order and Pay',
       'please_add_card_or_cash': 'Please add a card or choose Cash',
-      'you_chose_cash': 'You chose Cash. Confirm the order? Payment will be done upon on delivery',
+      'you_chose_cash':
+          'You chose Cash. Confirm the order? Payment will be done upon on delivery',
       'pay_with_card': 'Pay with **** **** ****',
       'confirm': 'Confirm',
       'would_you_rate': 'Would you like to rate your experience?',
@@ -136,10 +143,12 @@ class AppLocalizations {
       'comments_hint': 'Tell us about your experience...',
       'submit_feedback': 'Submit Feedback',
       'feedback_submitted': 'Thank you for your feedback!',
-      'feedback_appreciation': 'We appreciate your feedback and will use it to improve our service.',
+      'feedback_appreciation':
+          'We appreciate your feedback and will use it to improve our service.',
       'help_us_improve': 'Help us improve your dining experience',
       'please_share_feedback': 'Please share your feedback',
-      'provide_detailed_feedback': 'Please provide more detailed feedback (min 10 characters)',
+      'provide_detailed_feedback':
+          'Please provide more detailed feedback (min 10 characters)',
       'rating_poor': 'Poor',
       'rating_fair': 'Fair',
       'rating_good': 'Good',
@@ -170,6 +179,10 @@ class AppLocalizations {
       'menu': 'Menu',
       'cart': 'Panier',
       'checkout': 'Paiement',
+
+      //SAFE TO KEEP for Option C (SHOULD KEEP)
+      'orders': 'Commandes', // Added for side drawer
+      "bestSellingDishes": "Plats les plus vendus",
 
       // Auth
       'sign_in': 'Connectez-vous à votre compte',
@@ -238,8 +251,10 @@ class AppLocalizations {
       'payment_successful': 'Paiement réussi',
       'order_placed': 'Votre commande a été passée!',
       'confirm_order_btn': 'Confirmer et payer',
-      'please_add_card_or_cash': 'Veuillez ajouter une carte ou choisir Espèces',
-      'you_chose_cash': 'Vous avez choisi Espèces. Confirmer la commande? Le paiement sera effectué à la livraison',
+      'please_add_card_or_cash':
+          'Veuillez ajouter une carte ou choisir Espèces',
+      'you_chose_cash':
+          'Vous avez choisi Espèces. Confirmer la commande? Le paiement sera effectué à la livraison',
       'pay_with_card': 'Payer avec **** **** ****',
       'confirm': 'Confirmer',
       'would_you_rate': 'Souhaitez-vous évaluer votre expérience?',
@@ -280,10 +295,12 @@ class AppLocalizations {
       'comments_hint': 'Parlez-nous de votre expérience...',
       'submit_feedback': 'Soumettre',
       'feedback_submitted': 'Merci pour vos commentaires!',
-      'feedback_appreciation': 'Nous apprécions vos commentaires et les utiliserons pour améliorer notre service.',
+      'feedback_appreciation':
+          'Nous apprécions vos commentaires et les utiliserons pour améliorer notre service.',
       'help_us_improve': 'Aidez-nous à améliorer votre expérience culinaire',
       'please_share_feedback': 'Veuillez partager vos commentaires',
-      'provide_detailed_feedback': 'Veuillez fournir des commentaires plus détaillés (min 10 caractères)',
+      'provide_detailed_feedback':
+          'Veuillez fournir des commentaires plus détaillés (min 10 caractères)',
       'rating_poor': 'Médiocre',
       'rating_fair': 'Passable',
       'rating_good': 'Bien',
@@ -314,6 +331,10 @@ class AppLocalizations {
       'menu': 'Menú',
       'cart': 'Cesta',
       'checkout': 'Pagar',
+
+      //SAFE TO KEEP for Option C(SHOULD KEEP)
+      'orders': 'Pedidos', // Added for side drawer
+      "bestSellingDishes": "Platos más vendidos",
 
       // Auth
       'sign_in': 'Inicia sesión en tu cuenta',
@@ -383,7 +404,8 @@ class AppLocalizations {
       'order_placed': '¡Tu pedido ha sido realizado!',
       'confirm_order_btn': 'Confirmar y pagar',
       'please_add_card_or_cash': 'Por favor añade una tarjeta o elige Efectivo',
-      'you_chose_cash': 'Elegiste Efectivo. ¿Confirmar el pedido? El pago se realizará en la entrega',
+      'you_chose_cash':
+          'Elegiste Efectivo. ¿Confirmar el pedido? El pago se realizará en la entrega',
       'pay_with_card': 'Pagar con **** **** ****',
       'confirm': 'Confirmar',
       'would_you_rate': '¿Te gustaría calificar tu experiencia?',
@@ -424,10 +446,12 @@ class AppLocalizations {
       'comments_hint': 'Cuéntanos sobre tu experiencia...',
       'submit_feedback': 'Enviar',
       'feedback_submitted': '¡Gracias por tu opinión!',
-      'feedback_appreciation': 'Apreciamos tus comentarios y los usaremos para mejorar nuestro servicio.',
+      'feedback_appreciation':
+          'Apreciamos tus comentarios y los usaremos para mejorar nuestro servicio.',
       'help_us_improve': 'Ayúdanos a mejorar tu experiencia gastronómica',
       'please_share_feedback': 'Por favor comparte tus comentarios',
-      'provide_detailed_feedback': 'Por favor proporciona comentarios más detallados (mín 10 caracteres)',
+      'provide_detailed_feedback':
+          'Por favor proporciona comentarios más detallados (mín 10 caracteres)',
       'rating_poor': 'Malo',
       'rating_fair': 'Regular',
       'rating_good': 'Bueno',
@@ -581,10 +605,14 @@ class AppLocalizations {
   String get signingIn => translate('signing_in');
   String get backBtn => translate('back_btn');
 
-
+  // >>> Getter for Manage Orders button (side drawer) <<<(OPTION C)
+  String get manageOrders => translate('orders');
+  //Option C (SAFE TO KEEP)
+  String get bestSellingDishes => translate('bestSellingDishes');
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override

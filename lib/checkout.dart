@@ -5,6 +5,9 @@ import 'cart_provider.dart';
 import '/app_bottom_bar.dart';
 import 'app_localizations.dart';
 
+//import for option A
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 const kAqua = Color(0xFFBDEDF0);
 const kDeepBlue = Color(0xFF146C72);
 
@@ -28,7 +31,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     const deliveryCharge = 50.0;
     const discount = 0.0;
     final total =
-    (subtotal + deliveryCharge - discount).clamp(0, double.infinity) as double;
+        (subtotal + deliveryCharge - discount).clamp(0, double.infinity)
+            as double;
 
     return Scaffold(
       backgroundColor: kAqua,
@@ -41,8 +45,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         children: [
           const SizedBox(height: 6),
-          Text(loc.paymentOption,
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            loc.paymentOption,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 10),
 
           Row(
@@ -95,7 +101,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ? loc.noCard
                               : '**** **** **** ${_savedCard!.last4}',
                           style: const TextStyle(
-                              color: Colors.white, fontSize: 18),
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -110,7 +118,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
                     icon: const Icon(Icons.add),
-                    label: Text(_savedCard == null ? loc.addNew : loc.replaceCard),
+                    label: Text(
+                      _savedCard == null ? loc.addNew : loc.replaceCard,
+                    ),
                     onPressed: () async {
                       final added = await Navigator.push<CardInfo>(
                         context,
@@ -120,9 +130,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       );
                       if (added != null && mounted) {
                         setState(() => _savedCard = added);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(loc.cardSaved)),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(loc.cardSaved)));
                       }
                     },
                   ),
@@ -133,13 +143,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           const SizedBox(height: 20),
           Row(
             children: [
-              Text('${loc.total.toUpperCase()}:',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              Text(
+                '${loc.total.toUpperCase()}:',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const Spacer(),
               Text(
                 '$currency${total.toStringAsFixed(2)}',
-                style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ],
           ),
@@ -151,8 +168,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: kDeepBlue,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
+
+              //changed onpressed() to save orders to supabase
+              //did not change anything else, functionality and is the same
+              //SAFE TO KEEP
               onPressed: () async {
                 if (_method == PaymentMethod.card && _savedCard == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -160,6 +182,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   );
                   return;
                 }
+
                 final ok = await showDialog<bool>(
                   context: context,
                   builder: (_) => AlertDialog(
@@ -203,13 +226,64 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 );
 
                 if (ok == true && context.mounted) {
+                  // -------------------- SAVE ORDER TO SUPABASE -------------------- //
+                  try {
+                    final supabase =
+                        Supabase.instance.client; // SAFE TO KEEP DURING MERGING
+                    final user = supabase.auth.currentUser;
+                    if (user != null) {
+                      // Insert order
+                      final order = await supabase
+                          .from('orders')
+                          .insert({
+                            'user_id': user.id,
+                            'total': total,
+                            'status': 'pending',
+                          })
+                          .select()
+                          .single();
+
+                      final orderId = order['id'];
+
+                      // Insert order items
+                      final cartItems = context.read<CartProvider>().lines;
+                      if (cartItems.isNotEmpty) {
+                        final itemsToInsert = cartItems
+                            .map(
+                              (line) => {
+                                'order_id': orderId,
+                                'menu_item_id': line.item.id,
+                                'name': line.item.name, // store menu name
+                                'price': line.item.price,
+                                'quantity': line.qty,
+                                'selected_options':
+                                    line.selected, // Dart List<String> -> JSONB
+                              },
+                            )
+                            .toList();
+
+                        await supabase
+                            .from('order_items')
+                            .insert(itemsToInsert);
+                      }
+                    }
+                  } catch (e) {
+                    debugPrint(
+                      'Error saving order: $e',
+                    ); // SAFE TO KEEP DURING MERGING
+                  }
+                  // ---------------------------------------------------------------- //
+
                   context.read<CartProvider>().clear();
                   if (!mounted) return;
                   await showDialog<void>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      icon: const Icon(Icons.check_circle,
-                          size: 48, color: Colors.green),
+                      icon: const Icon(
+                        Icons.check_circle,
+                        size: 48,
+                        color: Colors.green,
+                      ),
                       title: Text(
                         _method == PaymentMethod.cash
                             ? loc.orderConfirmed
@@ -268,6 +342,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   );
                 }
               },
+
               child: Text(
                 _method == PaymentMethod.cash
                     ? loc.confirmOrder
@@ -313,8 +388,9 @@ class AddCardScreen extends StatefulWidget {
 
 class _AddCardScreenState extends State<AddCardScreen> {
   final _form = GlobalKey<FormState>();
-  late final TextEditingController _name =
-  TextEditingController(text: widget.initial?.holderName ?? 'Peter Parker');
+  late final TextEditingController _name = TextEditingController(
+    text: widget.initial?.holderName ?? 'Peter Parker',
+  );
   final _number = TextEditingController();
   final _exp = TextEditingController();
   final _cvc = TextEditingController();
@@ -359,7 +435,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
               controller: _name,
               decoration: _input('Peter Parker'),
               validator: (v) =>
-              (v == null || v.trim().isEmpty) ? loc.required : null,
+                  (v == null || v.trim().isEmpty) ? loc.required : null,
             ),
             const SizedBox(height: 14),
 
@@ -372,8 +448,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 _CardNumberFormatter(),
               ],
               decoration: _input('2134 1234 1234 1234'),
-              validator: (v) =>
-              (v == null || v.replaceAll(' ', '').length < 16)
+              validator: (v) => (v == null || v.replaceAll(' ', '').length < 16)
                   ? loc.enterValidNumber
                   : null,
             ),
@@ -395,7 +470,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                         ],
                         decoration: _input('mm/yyyy'),
                         validator: (v) =>
-                        (v == null || !RegExp(r'^\d{2}/\d{4}$').hasMatch(v))
+                            (v == null || !RegExp(r'^\d{2}/\d{4}$').hasMatch(v))
                             ? loc.invalidDate
                             : null,
                       ),
@@ -417,7 +492,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                         ],
                         decoration: _input('***'),
                         validator: (v) =>
-                        (v == null || v.length < 3) ? loc.invalidCvc : null,
+                            (v == null || v.length < 3) ? loc.invalidCvc : null,
                       ),
                     ],
                   ),
@@ -432,7 +507,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 style: FilledButton.styleFrom(
                   backgroundColor: kDeepBlue,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () {
                   if (!_form.currentState!.validate()) return;
@@ -457,8 +533,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     hintText: hint,
     filled: true,
     fillColor: Colors.white,
-    contentPadding:
-    const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide.none,
@@ -475,9 +550,14 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Text(text,
-          style: const TextStyle(
-              color: Colors.black54, fontSize: 12, letterSpacing: .3)),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.black54,
+          fontSize: 12,
+          letterSpacing: .3,
+        ),
+      ),
     );
   }
 }
@@ -514,9 +594,13 @@ class _PaymentTile extends StatelessWidget {
           children: [
             Icon(icon, size: 28, color: kDeepBlue),
             const SizedBox(height: 8),
-            Text(label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600, color: kDeepBlue)),
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: kDeepBlue,
+              ),
+            ),
             if (selected)
               const Padding(
                 padding: EdgeInsets.only(top: 4),
@@ -532,7 +616,9 @@ class _PaymentTile extends StatelessWidget {
 class _CardNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final digits = newValue.text.replaceAll(' ', '');
     final buf = StringBuffer();
     for (var i = 0; i < digits.length; i++) {
@@ -550,7 +636,9 @@ class _CardNumberFormatter extends TextInputFormatter {
 class _ExpiryFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     var d = newValue.text.replaceAll('/', '');
     if (d.length > 6) d = d.substring(0, 6);
     if (d.length >= 3) d = '${d.substring(0, 2)}/${d.substring(2)}';
